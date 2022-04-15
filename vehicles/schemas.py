@@ -38,9 +38,9 @@ class VehicleBasic(BaseModel):
 
 
 class VehicleCreate(BaseModel):
-    type: VehicleType
-    make: VehicleMake
-    model: VehicleModel
+    type: VehicleType = "string"
+    make: VehicleMake = "string"
+    model: VehicleModel = "string"
     reg_id: str
     color: str
     in_workshop: Optional[bool] = False
