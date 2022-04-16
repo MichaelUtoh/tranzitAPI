@@ -1,6 +1,5 @@
-notes.txt
-vehicles.py
-
 *.db
 
 __pycache__
+
+notes.txt

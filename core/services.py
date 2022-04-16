@@ -1,10 +1,20 @@
+from uuid import uuid4 as uuidlib
 from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from .models import Vehicle
-from .schemas import VehicleCreate
+from .models.vehicles import Vehicle
+from .schemas.vehicles import VehicleCreate
+from .database import SessionLocal
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def create_vehicle(data: VehicleCreate, db: Session):
