@@ -10,12 +10,17 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(30), index=True, nullable=True)
     middle_name = Column(String(30), index=True, nullable=True)
-    last_name = Column(String(30), index=True)
+    last_name = Column(String(30), index=True, nullable=True)
     email = Column(String, index=True)
+    password = Column(String, index=True)
     phone_no = Column(String, index=True, nullable=True)
     last_login = Column(String, index=True)
+
     next_of_kin_first_name = Column(String, index=True, nullable=True)
     next_of_kin_last_name = Column(String, index=True, nullable=True)
+
+    account_no = Column(String, index=True, nullable=True)
+    bvn = Column(String, index=True, nullable=True)
 
     documents = relationship("UserDocument", back_populates="users")
 
