@@ -4,10 +4,18 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class RegisterSchema(BaseModel):
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+
+
+class RegisterUserSchema(BaseModel):
     email: str
     password: str
-    password2: str
 
 
 class LoginSchema(BaseModel):

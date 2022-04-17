@@ -13,6 +13,7 @@ from ..schemas.vehicles import (
 )
 from ..services import create_vehicle, get_db
 
+
 router = APIRouter(
     prefix="/vehicles",
     tags=["vehicles"],
