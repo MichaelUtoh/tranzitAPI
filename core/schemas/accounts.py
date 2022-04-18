@@ -24,3 +24,16 @@ class LoginSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserUpdateSchema(BaseModel):
+    first_name: str
+    middle_name: str
+    last_name: str
+    phone_no: str
+
+    next_of_kin_first_name: str
+    next_of_kin_last_name: str
+
+    class Config:
+        orm_mode = True

@@ -22,7 +22,7 @@ router = APIRouter(
 
 
 @router.get(
-    "/vehicles",
+    "",
     response_model=List[VehicleBasic],
     status_code=status.HTTP_200_OK,
     tags=["vehicles"],
@@ -31,20 +31,18 @@ def fetch_vehicles(db: Session = Depends(get_db)):
     return db.query(Vehicle).all()
 
 
-@router.get("/vehicles/{id}", status_code=status.HTTP_200_OK, tags=["vehicles"])
+@router.get("/{id}", status_code=status.HTTP_200_OK, tags=["vehicles"])
 def fetch_vehicle(id: int, db: Session = Depends(get_db)):
     return db.query(Vehicle).filter(Vehicle.id == id).first()
 
 
-@router.post("/vehicles/new", status_code=status.HTTP_201_CREATED, tags=["vehicles"])
+@router.post("/new", status_code=status.HTTP_201_CREATED, tags=["vehicles"])
 def add_vehicle(data: VehicleCreate, db: Session = Depends(get_db)):
     new_vehicle = create_vehicle(data, db)
     return new_vehicle
 
 
-@router.patch(
-    "/vehicle/{id}/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["vehicles"]
-)
+@router.patch("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["vehicles"])
 def remove_vehicle(id: int, db: Session = Depends(get_db)):
     vehicle = db.query(Vehicle).filter(Vehicle.id == id)
     vehicle.delete()
@@ -54,7 +52,7 @@ def remove_vehicle(id: int, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "vehicles/{id}/manifests/new",
+    "/{id}/manifests/new",
     status_code=status.HTTP_201_CREATED,
     tags=["vehicles"],
 )
