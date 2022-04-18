@@ -1,49 +1,46 @@
 from datetime import datetime
+from typing import List
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from core.models.accounts import User
 
-from core.database import Base, engine
-from core.schemas.accounts import LoginSchema, RegisterUserSchema, UserUpdateSchema
+from core.schemas.accounts import (
+    LoginSchema,
+    RegisterUserSchema,
+    UserBasicSchema,
+    UserUpdateSchema,
+)
 from core.services import get_db
-from utils import pwd_context
+from utils import get_password_hash, pwd_context
 
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["auth"],
+    prefix="/accounts",
+    tags=["accounts"],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.post("/login")
-def login(data: LoginSchema, db: Session = Depends(get_db)):
-    return data
-
-
-@router.post("/register")
-def register(data: RegisterUserSchema, db: Session = Depends(get_db)):
-    is_registered = db.query(User).filter(User.email == data.email).first()
-    if is_registered:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A registered account with this email already exists.",
-        )
-    user = User(email=data.email, password=pwd_context.hash(data.password))
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
-@router.get("/users")
+@router.get("", response_model=List[UserBasicSchema])
 def fetch_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return users
 
 
-@router.patch("/users/{id}/update")
+@router.get("/{id}", response_model=UserBasicSchema)
+def fetch_user_by_id(id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Account with this id doesn't exists.",
+        )
+    return user
+
+
+@router.patch("/{id}/update")
 def update_user(id: int, data: UserUpdateSchema, db: Session = Depends(get_db)):
 
     db.query(User).filter(User.id == id).update(
@@ -62,7 +59,7 @@ def update_user(id: int, data: UserUpdateSchema, db: Session = Depends(get_db)):
     return {"detail": "User account updated successfully."}
 
 
-@router.patch("/users/{id}/remove", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/{id}/remove", status_code=status.HTTP_204_NO_CONTENT)
 def remove_user(id: int, db: Session = Depends(get_db)):
     db.query(User).filter(User.id == id).delete(synchronize_session=False)
     db.commit()

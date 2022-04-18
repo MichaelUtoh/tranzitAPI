@@ -9,6 +9,7 @@ class Level(str, Enum):
     ADMIN = "admin"
     LINE_MANAGER = "line manager"
     DRIVER = "driver"
+    TICKETERS = "ticketers"
 
 
 class Token(BaseModel):
@@ -33,14 +34,26 @@ class LoginSchema(BaseModel):
         orm_mode = True
 
 
-class UserUpdateSchema(BaseModel):
-    first_name: str
-    middle_name: str
-    last_name: str
-    phone_no: str
+class UserBasicSchema(BaseModel):
+    user_id: Optional[str]
+    email: str
+    first_name: Optional[str]
+    middle_name: Optional[str]
+    last_name: Optional[str]
+    phone_no: Optional[str]
 
-    next_of_kin_first_name: str
-    next_of_kin_last_name: str
+    class Config:
+        orm_mode = True
+
+
+class UserUpdateSchema(BaseModel):
+    first_name: Optional[str]
+    middle_name: Optional[str]
+    last_name: Optional[str]
+    phone_no: Optional[str]
+
+    next_of_kin_first_name: Optional[str]
+    next_of_kin_last_name: Optional[str]
 
     class Config:
         orm_mode = True
