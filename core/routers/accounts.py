@@ -1,16 +1,12 @@
 from datetime import datetime
-from multiprocessing import synchronize
-from typing import List
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
-from sqlalchemy import delete
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from core.models.accounts import User
 
-from core.schemas.accounts import LoginSchema, RegisterUserSchema, UserUpdateSchema
-
 from core.database import Base, engine
-from core.services import create_vehicle, get_db
+from core.schemas.accounts import LoginSchema, RegisterUserSchema, UserUpdateSchema
+from core.services import get_db
 from utils import pwd_context
 
 
@@ -47,9 +43,23 @@ def fetch_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.put("/users/{id}/update")
+@router.patch("/users/{id}/update")
 def update_user(id: int, data: UserUpdateSchema, db: Session = Depends(get_db)):
-    return data
+
+    db.query(User).filter(User.id == id).update(
+        {
+            "first_name": data.first_name,
+            "middle_name": data.middle_name,
+            "last_name": data.last_name,
+            "last_login": datetime.now(),
+            "phone_no": data.phone_no,
+            "next_of_kin_first_name": data.next_of_kin_first_name,
+            "next_of_kin_last_name": data.next_of_kin_last_name,
+        },
+        synchronize_session=False,
+    )
+    db.commit()
+    return {"detail": "User account updated successfully."}
 
 
 @router.patch("/users/{id}/remove", status_code=status.HTTP_204_NO_CONTENT)

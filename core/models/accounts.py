@@ -19,6 +19,7 @@ class User(Base):
     next_of_kin_first_name = Column(String, index=True, nullable=True)
     next_of_kin_last_name = Column(String, index=True, nullable=True)
 
+    bank = Column(String, index=True, nullable=True)
     account_no = Column(String, index=True, nullable=True)
     bvn = Column(String, index=True, nullable=True)
 
