@@ -13,18 +13,21 @@ from core.schemas.accounts import (
     UserUpdateSchema,
 )
 from core.services import get_db
-from utils import get_password_hash, pwd_context
+from utils import get_current_user
 
 
 router = APIRouter(
     prefix="/accounts",
     tags=["accounts"],
     responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_current_user)],
 )
 
 
 @router.get("", response_model=List[UserBasicSchema])
-def fetch_users(db: Session = Depends(get_db)):
+def fetch_users(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     users = db.query(User).all()
     return users
 

@@ -12,15 +12,6 @@ class Level(str, Enum):
     TICKETERS = "ticketers"
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    email: Optional[str] = None
-
-
 class RegisterUserSchema(BaseModel):
     email: str
     password: str

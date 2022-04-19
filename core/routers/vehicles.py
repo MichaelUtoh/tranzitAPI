@@ -4,6 +4,8 @@ from typing import List
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
+from utils import get_current_user
+
 from ..database import Base, engine
 from ..models.vehicles import Manifest, Vehicle
 from ..schemas.vehicles import (
@@ -18,6 +20,7 @@ router = APIRouter(
     prefix="/vehicles",
     tags=["vehicles"],
     responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_current_user)],
 )
 
 
