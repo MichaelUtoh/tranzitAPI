@@ -37,6 +37,10 @@ class UserBasicSchema(BaseModel):
         orm_mode = True
 
 
+class UserInDB(UserBasicSchema):
+    hashed_password: str
+
+
 class UserUpdateSchema(BaseModel):
     first_name: Optional[str]
     middle_name: Optional[str]
