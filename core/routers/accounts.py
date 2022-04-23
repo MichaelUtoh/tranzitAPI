@@ -20,14 +20,12 @@ router = APIRouter(
     prefix="/accounts",
     tags=["accounts"],
     responses={404: {"description": "Not found"}},
-    dependencies=[Depends(get_current_user)],
+    # dependencies=[Depends(get_current_user)],
 )
 
 
 @router.get("", response_model=List[UserBasicSchema])
-def fetch_users(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
+def fetch_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return users
 

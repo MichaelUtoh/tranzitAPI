@@ -20,7 +20,7 @@ router = APIRouter(
     prefix="/vehicles",
     tags=["vehicles"],
     responses={404: {"description": "Not found"}},
-    dependencies=[Depends(get_current_user)],
+    # dependencies=[Depends(get_current_user)],
 )
 
 
@@ -39,7 +39,11 @@ def fetch_vehicle(id: int, db: Session = Depends(get_db)):
     return db.query(Vehicle).filter(Vehicle.id == id).first()
 
 
-@router.post("/new", status_code=status.HTTP_201_CREATED, tags=["vehicles"])
+@router.post(
+    "/new",
+    status_code=status.HTTP_201_CREATED,
+    tags=["vehicles"],
+)
 def add_vehicle(data: VehicleCreate, db: Session = Depends(get_db)):
     new_vehicle = create_vehicle(data, db)
     return new_vehicle
