@@ -15,8 +15,6 @@ from core.schemas.accounts import (
 from core.schemas.auth import Token
 from core.services import get_db
 from utils import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    authenticate_user,
     create_access_token,
     get_current_user,
     get_password_hash,

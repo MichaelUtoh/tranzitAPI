@@ -26,10 +26,15 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=List[UserBasicSchema])
-def fetch_users(db: Session = Depends(get_db)):
-    # users = db.query(User).all()
+@router.get("/active", response_model=List[UserBasicSchema])
+def fetch_active_users(db: Session = Depends(get_db)):
     users = db.query(User).filter(User.status == "active").all()
+    return users
+
+
+@router.get("/archived", response_model=List[UserBasicSchema])
+def fetch_active_users(db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.status == "archived").all()
     return users
 
 
@@ -39,7 +44,7 @@ def fetch_user_by_id(id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Account with this id doesn't exists.",
+            detail="Not found.",
         )
     return user
 
@@ -70,8 +75,8 @@ def update_user(
     return {"detail": "User account updated successfully."}
 
 
-@router.patch("/{id}/remove", status_code=status.HTTP_204_NO_CONTENT)
-def remove_user(id: int, db: Session = Depends(get_db)):
-    db.query(User).filter(User.id == id).delete(synchronize_session=False)
+@router.patch("/{id}/change_status", status_code=status.HTTP_200_OK)
+def change_status(id: int, status: Status, db: Session = Depends(get_db)):
+    db.query(User).filter(User.id == id).update({"status": status})
     db.commit()
     return
