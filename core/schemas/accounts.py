@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Level(str, Enum):
@@ -10,6 +10,11 @@ class Level(str, Enum):
     LINE_MANAGER = "line manager"
     DRIVER = "driver"
     TICKETERS = "ticketers"
+
+
+class Status(str, Enum):
+    ACTIVE = "active"
+    ARCHIVED = "archived"
 
 
 class RegisterUserSchema(BaseModel):
@@ -32,13 +37,12 @@ class UserBasicSchema(BaseModel):
     middle_name: Optional[str]
     last_name: Optional[str]
     phone_no: Optional[str]
+    level: Optional[str]
+    status: Optional[str]
+    date_joined: str
 
     class Config:
         orm_mode = True
-
-
-class UserInDB(UserBasicSchema):
-    hashed_password: str
 
 
 class UserUpdateSchema(BaseModel):

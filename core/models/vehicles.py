@@ -28,11 +28,9 @@ class Driver(Base):
     __tablename__ = "drivers"
 
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(30), index=True)
-    middle_name = Column(String(30), index=True, nullable=True)
-    last_name = Column(String(30), index=True)
-    phone_no = Column(String(20), index=True, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
 
+    user = relationship("User", back_populates="driver")
     manifests = relationship("Manifest", back_populates="driver")
 
 

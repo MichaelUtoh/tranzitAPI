@@ -7,8 +7,10 @@ from sqlalchemy.orm import Session
 from core.models.accounts import User
 
 from core.schemas.accounts import (
+    Level,
     LoginSchema,
     RegisterUserSchema,
+    Status,
     UserBasicSchema,
     UserUpdateSchema,
 )
@@ -26,7 +28,8 @@ router = APIRouter(
 
 @router.get("", response_model=List[UserBasicSchema])
 def fetch_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+    # users = db.query(User).all()
+    users = db.query(User).filter(User.status == "active").all()
     return users
 
 
@@ -42,8 +45,13 @@ def fetch_user_by_id(id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{id}/update")
-def update_user(id: int, data: UserUpdateSchema, db: Session = Depends(get_db)):
-
+def update_user(
+    id: int,
+    status: Status,
+    level: Level,
+    data: UserUpdateSchema,
+    db: Session = Depends(get_db),
+):
     db.query(User).filter(User.id == id).update(
         {
             "first_name": data.first_name,
@@ -53,6 +61,8 @@ def update_user(id: int, data: UserUpdateSchema, db: Session = Depends(get_db)):
             "phone_no": data.phone_no,
             "next_of_kin_first_name": data.next_of_kin_first_name,
             "next_of_kin_last_name": data.next_of_kin_last_name,
+            "level": level,
+            "status": status,
         },
         synchronize_session=False,
     )

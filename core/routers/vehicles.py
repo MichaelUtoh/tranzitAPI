@@ -12,6 +12,9 @@ from ..schemas.vehicles import (
     ManifestCreate,
     VehicleBasic,
     VehicleCreate,
+    VehicleMake,
+    VehicleModel,
+    VehicleType,
 )
 from ..services import create_vehicle, get_db
 
@@ -44,8 +47,20 @@ def fetch_vehicle(id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_201_CREATED,
     tags=["vehicles"],
 )
-def add_vehicle(data: VehicleCreate, db: Session = Depends(get_db)):
-    new_vehicle = create_vehicle(data, db)
+def add_vehicle(
+    data: VehicleCreate,
+    type: VehicleType,
+    make: VehicleMake,
+    model: VehicleModel,
+    db: Session = Depends(get_db),
+):
+    is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
+    if is_registered:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A vehicle with this registration number already exists.",
+        )
+    new_vehicle = create_vehicle(data, type, make, model, db)
     return new_vehicle
 
 

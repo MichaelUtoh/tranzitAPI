@@ -17,11 +17,11 @@ def get_db():
         db.close()
 
 
-def create_vehicle(data: VehicleCreate, db: Session):
+def create_vehicle(data: VehicleCreate, type, make, model, db: Session):
     new_vehicle = Vehicle(
-        type=data.type,
-        make=data.make,
-        model=data.model,
+        type=type,
+        make=make,
+        model=model,
         reg_id=data.reg_id,
         color=data.color,
         maintenance_due_date=data.maintenance_due_date,

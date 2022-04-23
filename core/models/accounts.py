@@ -16,6 +16,9 @@ class User(Base):
     password = Column(String, index=True)
     phone_no = Column(String, index=True, nullable=True)
     last_login = Column(String, index=True)
+    level = Column(String, index=True)
+    status = Column(String, index=True)
+    date_joined = Column(String, index=True)
 
     next_of_kin_first_name = Column(String, index=True, nullable=True)
     next_of_kin_last_name = Column(String, index=True, nullable=True)
@@ -24,6 +27,7 @@ class User(Base):
     account_no = Column(String, index=True, nullable=True)
     bvn = Column(String, index=True, nullable=True)
 
+    driver = relationship("Driver", back_populates="user")
     documents = relationship("UserDocument", back_populates="users")
 
 
