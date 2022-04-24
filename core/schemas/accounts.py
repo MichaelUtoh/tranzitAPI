@@ -5,6 +5,14 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
+class DocumentType(str, Enum):
+    NATIONAL_IDENTITY_CARD = "national identity card"
+    NATIONAL_VOTERS_CARD = "national voters card"
+    DRIVERS_LICENSE = "drivers license"
+    INTERNATIONAL_PASSPORT = "international passport"
+    CERTIFICATE = "certificate"
+
+
 class Level(str, Enum):
     ADMIN = "admin"
     LINE_MANAGER = "line manager"

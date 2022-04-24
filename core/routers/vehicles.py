@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 
 from utils import get_current_user
 
-from ..database import Base, engine
-from ..models.vehicles import Manifest, Vehicle
-from ..schemas.vehicles import (
+from core.database import get_db
+from core.tasks.vehicles import create_vehicle
+from core.models.vehicles import Manifest, Vehicle
+from core.schemas.vehicles import (
     ManifestCreate,
     VehicleBasic,
     VehicleCreate,
@@ -16,8 +17,6 @@ from ..schemas.vehicles import (
     VehicleModel,
     VehicleType,
 )
-from ..services import create_vehicle, get_db
-
 
 router = APIRouter(
     prefix="/vehicles",

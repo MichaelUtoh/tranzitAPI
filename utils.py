@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from core.models.accounts import User
 
 from core.schemas.auth import TokenData
-from core.services import get_db
+from core.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -60,15 +60,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-# def authenticate_user(db, username: str, password: str):
-#     user = get_user(db, username)
-#     if not user:
-#         return False
-#     if not verify_password(password, user.hashed_password):
-#         return False
-#     return user
 
 
 def verify_token(token, credentials_exception):

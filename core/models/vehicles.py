@@ -2,7 +2,7 @@ from email.policy import default
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from core.database import Base
 
 
 class Vehicle(Base):

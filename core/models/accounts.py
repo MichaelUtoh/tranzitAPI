@@ -38,6 +38,7 @@ class UserDocument(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     document_type = Column(String, index=True)
+    document_name = Column(String, index=True)
     document_no = Column(String, index=True)
     document_expiry_date = Column(String, index=True, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))

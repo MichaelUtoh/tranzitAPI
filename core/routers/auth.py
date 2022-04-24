@@ -13,7 +13,7 @@ from core.schemas.accounts import (
     UserBasicSchema,
 )
 from core.schemas.auth import Token
-from core.services import get_db
+from core.database import get_db
 from utils import (
     create_access_token,
     get_current_user,

@@ -4,17 +4,8 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from .models.vehicles import Vehicle
-from .schemas.vehicles import VehicleCreate
-from .database import SessionLocal
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from core.models.vehicles import Vehicle
+from core.schemas.vehicles import VehicleCreate
 
 
 def create_vehicle(data: VehicleCreate, type, make, model, db: Session):

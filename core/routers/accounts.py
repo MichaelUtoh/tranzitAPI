@@ -14,7 +14,7 @@ from core.schemas.accounts import (
     UserBasicSchema,
     UserUpdateSchema,
 )
-from core.services import get_db
+from core.database import get_db
 from utils import get_current_user
 
 
