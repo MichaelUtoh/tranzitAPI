@@ -29,12 +29,16 @@ router = APIRouter(
 @router.get("/active", response_model=List[UserBasicSchema])
 def fetch_active_users(db: Session = Depends(get_db)):
     users = db.query(User).filter(User.status == "active").all()
+    if not users:
+        raise HTTPException(status_code=403, detail="Not found")
     return users
 
 
 @router.get("/archived", response_model=List[UserBasicSchema])
 def fetch_active_users(db: Session = Depends(get_db)):
     users = db.query(User).filter(User.status == "archived").all()
+    if not users:
+        raise HTTPException(status_code=403, detail="Not found")
     return users
 
 
@@ -57,6 +61,8 @@ def update_user(
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
+    if not db.query(User).filter(User.id == id).first():
+        raise HTTPException(status_code=403, detail="Not found")
     db.query(User).filter(User.id == id).update(
         {
             "first_name": data.first_name,
