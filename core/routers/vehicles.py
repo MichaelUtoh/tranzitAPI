@@ -15,6 +15,7 @@ from core.schemas.vehicles import (
     VehicleCreate,
     VehicleMake,
     VehicleModel,
+    VehicleStatus,
     VehicleType,
 )
 
@@ -64,11 +65,9 @@ def add_vehicle(
 
 
 @router.patch("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["vehicles"])
-def remove_vehicle(id: int, db: Session = Depends(get_db)):
-    vehicle = db.query(Vehicle).filter(Vehicle.id == id)
-    vehicle.delete()
+def toggle_vehicle_status(id: int, status: VehicleStatus, db: Session = Depends(get_db)):
+    db.query(Vehicle).filter(Vehicle.id == id).update({"status": status})
     db.commit()
-    db.refresh()
     return
 
 

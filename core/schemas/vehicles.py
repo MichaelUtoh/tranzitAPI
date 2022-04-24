@@ -5,6 +5,12 @@ from pydantic import BaseModel
 from sqlalchemy import null
 
 
+class VehicleStatus(str, Enum):
+    ACTIVE = "active"
+    DECOMMISSIONED = "decommissioned"
+    MAINTENANCE = "maintenance"
+
+
 class VehicleType(str, Enum):
     LUXURY_BUS = "luxury bus"
     SPACE_BUS = "space bus"
@@ -46,6 +52,5 @@ class VehicleCreate(BaseModel):
 
 class ManifestCreate(BaseModel):
     driver: int
-    driver_phone_no: str
-    vehicle: int
     location: str
+    passengers: Optional[str]

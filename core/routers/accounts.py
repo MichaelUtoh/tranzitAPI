@@ -81,8 +81,8 @@ def update_user(
     return {"detail": "User account updated successfully."}
 
 
-@router.patch("/{id}/change_status", status_code=status.HTTP_200_OK)
-def change_status(id: int, status: Status, db: Session = Depends(get_db)):
+@router.patch("/{id}/toggle_status", status_code=status.HTTP_200_OK)
+def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
     db.query(User).filter(User.id == id).update({"status": status})
     db.commit()
     return

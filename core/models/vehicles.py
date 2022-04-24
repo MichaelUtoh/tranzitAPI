@@ -1,5 +1,6 @@
 from email.policy import default
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from operator import index
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, ARRAY
 from sqlalchemy.orm import relationship
 
 from core.database import Base
@@ -15,26 +16,50 @@ class Vehicle(Base):
     model = Column(String(50), index=True)
     color = Column(String(20), index=True, nullable=True)
     today_trip_count = Column(Integer, default=0, index=True)
-    in_workshop = Column(Boolean, default=True)
+    status = Column(String(14), default="active", index=True)
     maintenance_due_date = Column(String, index=True, nullable=True)
     location = Column(Integer, ForeignKey("locations.id"))
     timestamp = Column(String)
 
     manifests = relationship("Manifest", back_populates="vehicle")
-    location = relationship("Location", back_populates="vehicle")
+    locations = relationship("Location", back_populates="vehicle")
+    ratings = relationship("VehicleRating", back_populates="vehicle")
+    reports = relationship("VehicleReport", back_populates="vehicle")
 
     def __repr__(self):
         return self.reg_id
+
+
+class VehicleReport(Base):
+    __tablename__ = "reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    report = Column(String(255), index=True)
+    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
+    passenger_id = Column(Integer, ForeignKey("passengers.id"))
+
+    vehicle = relationship("Vehicle", back_populates="reports")
+    passenger = relationship("Passenger", back_populates="reports")
+
+
+class VehicleRating(Base):
+    __tablename__ = "ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    star = Column(Integer, index=True)
+    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
+
+    vehicle = relationship("Vehicle", back_populates="ratings")
 
 
 class Manifest(Base):
     __tablename__ = "manifests"
 
     id = Column(Integer, primary_key=True, index=True)
-    driver_phone_no = (String, ForeignKey("users.phone_no"))
     location = Column(String(50))
     driver_id = Column(Integer, ForeignKey("users.id"))
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
+    passengers = Column(Integer, ForeignKey("passengers.id"))
     timestamp = Column(String)
 
     vehicle = relationship("Vehicle", back_populates="manifests")
@@ -57,7 +82,7 @@ class Location(Base):
     ended_trip = Column(Boolean, default=False, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
 
-    vehicle = relationship("Vehicle", back_populates="location")
+    vehicle = relationship("Vehicle", back_populates="locations")
 
     def __repr__(self):
         return self.destination_terminal
