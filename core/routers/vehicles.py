@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
-from utils import get_current_user
+from core.utils import get_current_user
 
 from core.database import get_db
 from core.tasks.vehicles import create, search

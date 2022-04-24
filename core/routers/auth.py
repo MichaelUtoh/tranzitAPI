@@ -14,7 +14,7 @@ from core.schemas.accounts import (
 )
 from core.schemas.auth import Token
 from core.database import get_db
-from utils import (
+from core.utils import (
     create_access_token,
     get_current_user,
     get_password_hash,

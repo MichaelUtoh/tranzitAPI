@@ -15,7 +15,7 @@ from core.schemas.accounts import (
     UserUpdateSchema,
 )
 from core.database import get_db
-from utils import get_current_user
+from core.utils import get_current_user
 
 
 router = APIRouter(
