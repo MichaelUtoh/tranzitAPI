@@ -63,6 +63,7 @@ class Passenger(Base):
     manifest_id = Column(Integer, ForeignKey("manifests.id"))
 
     manifest = relationship("Manifest", back_populates="passengers")
+    reports = relationship("VehicleReport", back_populates="passengers")
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"

@@ -60,10 +60,10 @@ def register(data: RegisterUserSchema, db: Session = Depends(get_db)):
         )
 
     user = User(
-        user_id=uuid4().__str__(),
+        user_id=str(uuid4()),
         email=data.email,
         password=get_password_hash(data.password),
-        date_joined=datetime.now(),
+        date_joined=str(datetime.now().date()),
     )
     db.add(user)
     db.commit()

@@ -18,9 +18,7 @@ class Vehicle(Base):
     today_trip_count = Column(Integer, default=0, index=True)
     status = Column(String(14), default="active", index=True)
     maintenance_due_date = Column(String, index=True, nullable=True)
-    location = Column(Integer, ForeignKey("locations.id"))
     timestamp = Column(String)
-
     manifests = relationship("Manifest", back_populates="vehicle")
     locations = relationship("Location", back_populates="vehicle")
     ratings = relationship("VehicleRating", back_populates="vehicle")
@@ -37,18 +35,18 @@ class VehicleReport(Base):
     report = Column(String(255), index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     passenger_id = Column(Integer, ForeignKey("passengers.id"))
-
+    timestamp = Column(String, index=True)
     vehicle = relationship("Vehicle", back_populates="reports")
-    passenger = relationship("Passenger", back_populates="reports")
+    passengers = relationship("Passenger", back_populates="reports")
 
 
 class VehicleRating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key=True, index=True)
-    star = Column(Integer, index=True)
+    rating = Column(Integer, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-
+    timestamp = Column(String, index=True)
     vehicle = relationship("Vehicle", back_populates="ratings")
 
 
@@ -59,9 +57,7 @@ class Manifest(Base):
     location = Column(String(50))
     driver_id = Column(Integer, ForeignKey("users.id"))
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-    passengers = Column(Integer, ForeignKey("passengers.id"))
     timestamp = Column(String)
-
     vehicle = relationship("Vehicle", back_populates="manifests")
     driver = relationship("User", back_populates="manifests")
     passengers = relationship("Passenger", back_populates="manifest")
@@ -81,7 +77,6 @@ class Location(Base):
     started_trip = Column(Boolean, default=False, index=True)
     ended_trip = Column(Boolean, default=False, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-
     vehicle = relationship("Vehicle", back_populates="locations")
 
     def __repr__(self):
