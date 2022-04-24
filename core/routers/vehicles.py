@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from utils import get_current_user
 
 from core.database import get_db
-from core.tasks.vehicles import create_vehicle
+from core.tasks.vehicles import create, search
 from core.models.vehicles import Manifest, Vehicle
 from core.schemas.vehicles import (
     ManifestCreate,
@@ -27,12 +27,7 @@ router = APIRouter(
 )
 
 
-# @router.get("", response_model=List[VehicleBasic], status_code=200)
-# def fetch_vehicles(db: Session = Depends(get_db)):
-#     return db.query(Vehicle).all()
-
-
-@router.get("/search", status_code=200)
+@router.get("", status_code=200)
 def search_vehicles(
     id: Optional[int] = None,
     reg_id: Optional[str] = None,
@@ -42,20 +37,8 @@ def search_vehicles(
     vehicles = db.query(Vehicle).all()
     if not vehicles:
         raise HTTPException(status_code=400, detail="Not found.")
-    if id and reg_id:
-        return (
-            db.query(Vehicle)
-            .filter(Vehicle.id == id)
-            .filter(Vehicle.reg_id == reg_id)
-            .first()
-        )
-    elif id and not reg_id:
-        return db.query(Vehicle).filter(Vehicle.id == id).first()
-    elif reg_id and not id and not status:
-        return db.query(Vehicle).filter(Vehicle.reg_id == reg_id).first()
-    elif status and not id and not reg_id:
-        return db.query(Vehicle).filter(Vehicle.status == status).all()
-    return db.query(Vehicle).all()
+    vehicles = search(id, reg_id, status, db)
+    return vehicles
 
 
 @router.post("/new", status_code=200)
@@ -69,7 +52,7 @@ def add_vehicle(
     is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
     if is_registered:
         raise HTTPException(status_code=400, detail="Not found.")
-    new_vehicle = create_vehicle(data, type, make, model, db)
+    new_vehicle = create(data, type, make, model, db)
     return new_vehicle
 
 
@@ -79,7 +62,7 @@ def toggle_vehicle_status(
 ):
     db.query(Vehicle).filter(Vehicle.id == id).update({"status": status})
     db.commit()
-    return
+    return db.query(Vehicle).filter(Vehicle.id == id).first()
 
 
 @router.post("/{id}/manifests/new", status_code=201)
