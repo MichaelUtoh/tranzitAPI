@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-from typing import List
+from datetime import datetime
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -30,24 +29,19 @@ router = APIRouter(
 )
 
 
-@router.post("/login", status_code=status.HTTP_200_OK)
+@router.post("/login", status_code=200)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == data.email).first()
+    user = db.query(User).filter(User.email == data.username).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid credentials.",
-        )
+        raise HTTPException(status_code=400, detail="Invalid credentials.")
 
     if not verify_password(data.password, user.password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect password.",
-        )
+        raise HTTPException(status_code=400, detail="Incorrect password.")
 
-    access_token = create_access_token(data={"sub": user.email})
-    data = {"email": user.email, "access_token": access_token, "token_type": "bearer"}
-    return data
+    # access_token = create_access_token(data={"sub": user.email})
+    # data = {"email": user.email, "access_token": access_token, "token_type": "bearer"}
+    # return data
+    return user
 
 
 @router.post("/register")
@@ -55,7 +49,7 @@ def register(data: RegisterUserSchema, db: Session = Depends(get_db)):
     is_registered = db.query(User).filter(User.email == data.email).first()
     if is_registered:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail="A registered account with this email already exists.",
         )
 
@@ -63,6 +57,7 @@ def register(data: RegisterUserSchema, db: Session = Depends(get_db)):
         user_id=str(uuid4()),
         email=data.email,
         password=get_password_hash(data.password),
+        status="active",
         date_joined=str(datetime.now().date()),
     )
     db.add(user)

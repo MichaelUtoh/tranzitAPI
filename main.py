@@ -11,6 +11,6 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Tranzit")
 
-app.include_router(accounts.router)
 app.include_router(auth.router)
+app.include_router(accounts.router)
 app.include_router(vehicles.router)

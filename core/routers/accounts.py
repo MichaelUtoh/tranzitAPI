@@ -1,6 +1,5 @@
 from datetime import datetime
-from typing import List
-from uuid import uuid4
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -15,6 +14,7 @@ from core.schemas.accounts import (
     UserUpdateSchema,
 )
 from core.database import get_db
+from core.tasks.accounts import search
 from core.utils import get_current_user
 
 
@@ -26,31 +26,19 @@ router = APIRouter(
 )
 
 
-@router.get("/active", response_model=List[UserBasicSchema])
-def fetch_active_users(db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.status == "active").all()
+@router.get("/search", response_model=UserBasicSchema)
+def search_users(
+    id: Optional[int] = None,
+    email: Optional[str] = None,
+    status: Optional[Status] = None,
+    db: Session = Depends(get_db),
+):
+    users = db.query(User).all()
     if not users:
-        raise HTTPException(status_code=403, detail="Not found")
+        raise HTTPException(status_code=400, detail="Not found.")
+    users = search(id, email, status, db)
+    print(users)
     return users
-
-
-@router.get("/archived", response_model=List[UserBasicSchema])
-def fetch_active_users(db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.status == "archived").all()
-    if not users:
-        raise HTTPException(status_code=403, detail="Not found")
-    return users
-
-
-@router.get("/{id}", response_model=UserBasicSchema)
-def fetch_user_by_id(id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Not found.",
-        )
-    return user
 
 
 @router.patch("/{id}/update")
