@@ -85,7 +85,7 @@ def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
     return
 
 
-@router.post("/passenger/create", status_code=200)
+@router.post("/passenger/add", status_code=200)
 def add_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
     passenger = create_passenger(data, db)
     if not passenger:

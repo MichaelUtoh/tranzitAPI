@@ -1,9 +1,17 @@
 from email.policy import default
 from operator import index
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, ARRAY
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
 from core.database import Base
+
+
+manifest_passengers = Table(
+    "manifest_passengers",
+    Base.metadata,
+    Column("manifests_id", ForeignKey("manifests.id"), primary_key=True),
+    Column("passengers_id", ForeignKey("passengers.id"), primary_key=True),
+)
 
 
 class Vehicle(Base):
@@ -54,13 +62,15 @@ class Manifest(Base):
     __tablename__ = "manifests"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String(50))
+    destination = Column(String(50))
     driver_id = Column(Integer, ForeignKey("users.id"))
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     timestamp = Column(String)
     vehicle = relationship("Vehicle", back_populates="manifests")
     driver = relationship("User", back_populates="manifests")
-    passengers = relationship("Passenger", back_populates="manifest")
+    passengers = relationship(
+        "Passenger", secondary="manifest_passengers", back_populates="manifests"
+    )
 
     def __repr__(self):
         return self.vehicle

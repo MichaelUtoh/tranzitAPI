@@ -28,8 +28,10 @@ class User(Base):
     account_no = Column(String, index=True, nullable=True)
     bvn = Column(String, index=True, nullable=True)
     date_joined = Column(String, index=True)
-    manifests = relationship("Manifest", back_populates="driver")
     documents = relationship("UserDocument", back_populates="users")
+    manifests = relationship(
+        "Manifest", secondary="manifest_passengers", back_populates="driver"
+    )
 
     def __repr__(self):
         return self.email
@@ -64,8 +66,8 @@ class Passenger(Base):
     next_of_kin_last_name = Column(String, index=True, nullable=True)
     next_of_kin_phone_no = Column(String, index=True, nullable=True)
     date_joined = Column(String, index=True)
-    manifest_id = Column(Integer, ForeignKey("manifests.id"))
-    manifest = relationship("Manifest", back_populates="passengers")
+    # manifest_id = Column(Integer, ForeignKey("manifests.id"))
+    # manifest = relationship("Manifest", back_populates="passengers")
     reports = relationship("VehicleReport", back_populates="passengers")
 
     def __repr__(self):

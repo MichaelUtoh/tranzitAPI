@@ -1,8 +1,9 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
-from sqlalchemy import null
+
+from core.schemas.accounts import PassengerBasicSchema
 
 
 class VehicleStatus(str, Enum):
@@ -49,8 +50,15 @@ class VehicleCreate(BaseModel):
     in_workshop: Optional[bool] = False
     maintenance_due_date: Optional[str] = None
 
+    class Config:
+        orm_mode = True
+
 
 class ManifestCreate(BaseModel):
-    driver: int
-    location: str
-    passengers: Optional[str]
+    driver_id: int
+    vehicle_id: int
+    destinattion: str
+    passengers: Optional[PassengerBasicSchema] = []
+
+    class Config:
+        orm_mode = True
