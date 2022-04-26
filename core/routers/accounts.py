@@ -3,18 +3,18 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from core.models.accounts import User
 
+from core.models.accounts import Passenger, User
 from core.schemas.accounts import (
     Level,
-    LoginSchema,
-    RegisterUserSchema,
     Status,
+    UserBankDetailSchema,
     UserBasicSchema,
+    PassengerCreateSchema,
     UserUpdateSchema,
 )
 from core.database import get_db
-from core.tasks.accounts import search
+from core.tasks.accounts import create_passenger, search
 from core.utils import get_current_user
 
 
@@ -37,7 +37,6 @@ def search_users(
     if not users:
         raise HTTPException(status_code=400, detail="Not found.")
     users = search(id, email, status, db)
-    print(users)
     return users
 
 
@@ -69,8 +68,26 @@ def update_user(
     return {"detail": "User account updated successfully."}
 
 
-@router.patch("/{id}/toggle_status", status_code=status.HTTP_200_OK)
+@router.patch("/{id}/add_bank_details", status_code=200)
+def add_bank_details(
+    id: int, data: UserBankDetailSchema, db: Session = Depends(get_db)
+):
+    db.query(User).filter(User.id == id).update(
+        {"bank": data.bank, "account_no": data.account_no, "bvn": data.bvn}
+    )
+    return {"detail": "User bank updated successfully."}
+
+
+@router.patch("/{id}/toggle_status", status_code=200)
 def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
     db.query(User).filter(User.id == id).update({"status": status})
     db.commit()
     return
+
+
+@router.post("/passenger/create", status_code=200)
+def add_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
+    passenger = create_passenger(data, db)
+    if not passenger:
+        raise HTTPException(status_code=400, detail="Something went wrong.")
+    return passenger

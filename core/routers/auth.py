@@ -29,8 +29,10 @@ router = APIRouter(
 )
 
 
-@router.post("/login", status_code=200)
-def login(data: LoginSchema, db: Session = Depends(get_db)):
+@router.post("/login")
+async def login(
+    data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.email == data.username).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials.")

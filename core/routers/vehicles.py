@@ -4,10 +4,9 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
-from core.utils import get_current_user
-
 from core.database import get_db
 from core.tasks.vehicles import create, search
+from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle
 from core.schemas.vehicles import (
     ManifestCreate,
@@ -18,6 +17,8 @@ from core.schemas.vehicles import (
     VehicleStatus,
     VehicleType,
 )
+from core.utils import get_current_user
+
 
 router = APIRouter(
     prefix="/vehicles",
@@ -33,6 +34,7 @@ def search_vehicles(
     reg_id: Optional[str] = None,
     status: Optional[VehicleStatus] = None,
     db: Session = Depends(get_db),
+    # current_user: User = Depends(get_current_user),
 ):
     vehicles = db.query(Vehicle).all()
     if not vehicles:

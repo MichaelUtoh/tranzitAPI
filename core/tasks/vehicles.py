@@ -1,6 +1,5 @@
 from typing import Optional
 from datetime import datetime
-from uuid import uuid4 as uuidlib
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -21,9 +20,7 @@ def create(data: VehicleCreate, type, make, model, db: Session):
         timestamp=datetime.now().date(),
     )
     if not new_vehicle:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong."
-        )
+        raise HTTPException(status_code=400, detail="Something went wrong.")
     db.add(new_vehicle)
     db.commit()
     db.refresh(new_vehicle)
