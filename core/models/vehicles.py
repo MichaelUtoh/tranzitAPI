@@ -71,7 +71,7 @@ class Manifest(Base):
     )
 
     def __repr__(self):
-        return self.vehicle
+        return f"id: {str(self.id)}, driver: {self.driver.first_name}, destination: {self.destination}"
 
 
 class Location(Base):

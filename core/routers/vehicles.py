@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.tasks.vehicles import create_vehicle, search, create_manifest
 from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle
 from core.schemas.vehicles import (
+    ManifestBasic,
     ManifestCreate,
     ManifestPassengerSchema,
     VehicleBasic,
@@ -17,6 +17,12 @@ from core.schemas.vehicles import (
     VehicleModel,
     VehicleStatus,
     VehicleType,
+)
+from core.tasks.vehicles import (
+    create_vehicle,
+    search,
+    create_manifest,
+    search_manifests,
 )
 from core.utils import get_current_user
 
@@ -76,12 +82,20 @@ def report_vehicle(id: int, db: Session = Depends(get_db)):
     return vehicle
 
 
-@router.post("/manifest/add", status_code=201)
+@router.post("/manifests/add", status_code=201)
 def add_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
     manifest = create_manifest(data, db)
     return manifest
 
 
-@router.patch("/manifest/add_passengers", status_code=201)
+@router.get("/manifests/search", status_code=200)
+def get_manifest(id: Optional[int] = None, db: Session = Depends(get_db)):
+    manifests = search_manifests(id, db)
+    if not manifests:
+        raise HTTPException(status_code=400, detail="Not found.")
+    return manifests
+
+
+@router.patch("/manifests/add_passengers", status_code=201)
 def add_passengers(data: ManifestPassengerSchema, db: Session = Depends(get_db)):
     pass

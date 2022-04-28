@@ -76,3 +76,9 @@ def create_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(manifest)
     return manifest
+
+
+def search_manifests(id: Optional[int] = None, db: Session = Depends(get_db)):
+    if id:
+        return db.query(Manifest).filter(Manifest.id == id).first()
+    return db.query(Manifest).all()

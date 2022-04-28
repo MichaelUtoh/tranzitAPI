@@ -64,5 +64,10 @@ class ManifestCreate(BaseModel):
         orm_mode = True
 
 
+class ManifestBasic(BaseModel):
+    # id: int
+    destination: Optional[str] = None
+
+
 class ManifestPassengerSchema(BaseModel):
     pass
