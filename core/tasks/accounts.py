@@ -21,7 +21,7 @@ def search(
     elif email and not id and not status:
         res = db.query(User).filter(User.email == email).first()
     elif status and not id and not email:
-        res = db.query(User).filter(User.status == status).first()
+        res = db.query(User).filter(User.status == status).all()
     return res
 
 

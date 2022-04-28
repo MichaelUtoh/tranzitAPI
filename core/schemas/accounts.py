@@ -57,7 +57,8 @@ class UserBasicSchema(BaseModel):
     first_name: Optional[str]
     middle_name: Optional[str]
     last_name: Optional[str]
-    phone_no: Optional[str]
+    phone_no_1: Optional[str]
+    phone_no_2: Optional[str]
     level: Optional[str]
     status: Optional[str]
     date_joined: str
@@ -70,8 +71,11 @@ class UserUpdateSchema(BaseModel):
     first_name: Optional[str]
     middle_name: Optional[str]
     last_name: Optional[str]
-    phone_no: Optional[str]
-
+    phone_no_1: Optional[str]
+    phone_no_2: Optional[str]
+    gender: Optional[Gender] = None
+    marital_status: Optional[str]
+    nationality: Optional[str]
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -26,7 +26,7 @@ router = APIRouter(
 )
 
 
-@router.get("/search", response_model=UserBasicSchema)
+@router.get("/search", response_model=List[UserBasicSchema])
 def search_users(
     id: Optional[int] = None,
     email: Optional[str] = None,
@@ -56,7 +56,11 @@ def update_user(
             "middle_name": data.middle_name,
             "last_name": data.last_name,
             "last_login": datetime.now(),
-            "phone_no": data.phone_no,
+            "phone_no_1": data.phone_no_1,
+            "phone_no_2": data.phone_no_2,
+            "gender": data.gender,
+            "marital_status": data.marital_status,
+            "nationality": data.nationality,
             "next_of_kin_first_name": data.next_of_kin_first_name,
             "next_of_kin_last_name": data.next_of_kin_last_name,
             "level": level,

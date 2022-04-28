@@ -57,8 +57,12 @@ class VehicleCreate(BaseModel):
 class ManifestCreate(BaseModel):
     driver_id: int
     vehicle_id: int
-    destinattion: str
-    passengers: Optional[PassengerBasicSchema] = []
+    destination: str
+    # passengers: List[int]
 
     class Config:
         orm_mode = True
+
+
+class ManifestPassengerSchema(BaseModel):
+    pass

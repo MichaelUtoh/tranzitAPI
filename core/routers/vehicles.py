@@ -10,6 +10,7 @@ from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle
 from core.schemas.vehicles import (
     ManifestCreate,
+    ManifestPassengerSchema,
     VehicleBasic,
     VehicleCreate,
     VehicleMake,
@@ -79,3 +80,8 @@ def report_vehicle(id: int, db: Session = Depends(get_db)):
 def add_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
     manifest = create_manifest(data, db)
     return manifest
+
+
+@router.patch("/manifest/add_passengers", status_code=201)
+def add_passengers(data: ManifestPassengerSchema, db: Session = Depends(get_db)):
+    pass
