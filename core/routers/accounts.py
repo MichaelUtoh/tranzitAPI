@@ -1,8 +1,8 @@
 from datetime import datetime
+from os import stat
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from core.models.accounts import Passenger, User
@@ -12,10 +12,11 @@ from core.schemas.accounts import (
     UserBankDetailSchema,
     UserBasicSchema,
     PassengerCreateSchema,
+    UserDetailsSchema,
     UserUpdateSchema,
 )
 from core.database import get_db
-from core.tasks.accounts import create_passenger, search_users
+from core.tasks.accounts import create_passenger, update_user_task
 from core.utils import get_current_user
 
 
@@ -27,18 +28,14 @@ router = APIRouter(
 )
 
 
-@router.get("/{id}/details", response_model=UserBasicSchema)
+@router.get("/{id}/details", response_model=UserDetailsSchema)
 def get_user(id: int, db: Session = Depends(get_db)):
     return db.query(User).filter(User.id == id).first()
 
 
 @router.get("/users", response_model=List[UserBasicSchema])
-def get_users(
-    email: Optional[EmailStr] = None,
-    status: Optional[str] = None,
-    db: Session = Depends(get_db),
-):
-    users = search_users()
+def get_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
     if not users:
         raise HTTPException(status_code=400, detail="Not found.")
     return users
@@ -47,32 +44,12 @@ def get_users(
 @router.patch("/{id}/update")
 def update_user(
     id: int,
-    status: Status,
     level: Level,
+    status: Status,
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
-    if not db.query(User).filter(User.id == id).first():
-        raise HTTPException(status_code=403, detail="Not found")
-    db.query(User).filter(User.id == id).update(
-        {
-            "first_name": data.first_name,
-            "middle_name": data.middle_name,
-            "last_name": data.last_name,
-            "last_login": datetime.now(),
-            "phone_no_1": data.phone_no_1,
-            "phone_no_2": data.phone_no_2,
-            "gender": data.gender,
-            "marital_status": data.marital_status,
-            "nationality": data.nationality,
-            "next_of_kin_first_name": data.next_of_kin_first_name,
-            "next_of_kin_last_name": data.next_of_kin_last_name,
-            "level": level,
-            "status": status,
-        },
-        synchronize_session=False,
-    )
-    db.commit()
+    update_user_task(id, level, status, data, db)
     return {"detail": "User account updated successfully."}
 
 
@@ -93,7 +70,7 @@ def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
     return
 
 
-@router.post("/passenger/add", status_code=200)
+@router.post("/passenger/create", status_code=200)
 def add_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
     passenger = create_passenger(data, db)
     if not passenger:

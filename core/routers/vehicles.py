@@ -50,7 +50,7 @@ def search_vehicles(
     return vehicles
 
 
-@router.post("/add", status_code=200)
+@router.post("/create", status_code=200)
 def add_vehicle(
     data: VehicleCreate,
     type: VehicleType,
@@ -82,7 +82,7 @@ def report_vehicle(id: int, db: Session = Depends(get_db)):
     return vehicle
 
 
-@router.post("/manifests/add", status_code=201)
+@router.post("/manifests/create", status_code=201)
 def add_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
     manifest = create_manifest(data, db)
     return manifest
@@ -96,6 +96,6 @@ def get_manifest(id: Optional[int] = None, db: Session = Depends(get_db)):
     return manifests
 
 
-@router.patch("/manifests/add_passengers", status_code=201)
-def add_passengers(data: ManifestPassengerSchema, db: Session = Depends(get_db)):
+@router.patch("/manifests/populate", status_code=201)
+def populate_manifest(data: ManifestPassengerSchema, db: Session = Depends(get_db)):
     pass

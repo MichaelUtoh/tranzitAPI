@@ -65,7 +65,20 @@ class UserBasicSchema(BaseModel):
     last_name: Optional[str]
     phone_no_1: Optional[str]
     level: Optional[Level] = None
+
+    class Config:
+        orm_mode = True
+
+
+class UserDetailsSchema(UserBasicSchema):
+    phone_no_2: Optional[str]
+    gender: Optional[Gender] = None
+    marital_status: Optional[MaritalStatus] = "single"
+    nationality: Optional[str]
     status: Optional[Status] = None
+    next_of_kin_first_name: Optional[str]
+    next_of_kin_last_name: Optional[str]
+    last_login: Optional[str]
     date_joined: str
 
     class Config:
@@ -78,8 +91,8 @@ class UserUpdateSchema(BaseModel):
     last_name: Optional[str]
     phone_no_1: Optional[str]
     phone_no_2: Optional[str]
-    gender: Optional[Gender] = None
-    marital_status: Optional[MaritalStatus] = None
+    gender: Gender
+    marital_status: Optional[MaritalStatus] = "single"
     nationality: Optional[str]
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]
