@@ -19,6 +19,13 @@ class Gender(str, Enum):
     NOT_STATED = "not stated"
 
 
+class MaritalStatus(str, Enum):
+    SINGLE = "single"
+    MARRIED = "married"
+    DIVORCED = "divorced"
+    OTHER = "other"
+
+
 class Level(str, Enum):
     ADMIN = "admin"
     LINE_MANAGER = "line manager"
@@ -55,12 +62,10 @@ class UserBasicSchema(BaseModel):
     user_id: Optional[str]
     email: EmailStr
     first_name: Optional[str]
-    middle_name: Optional[str]
     last_name: Optional[str]
     phone_no_1: Optional[str]
-    phone_no_2: Optional[str]
-    level: Optional[str]
-    status: Optional[str]
+    level: Optional[Level] = None
+    status: Optional[Status] = None
     date_joined: str
 
     class Config:
@@ -74,7 +79,7 @@ class UserUpdateSchema(BaseModel):
     phone_no_1: Optional[str]
     phone_no_2: Optional[str]
     gender: Optional[Gender] = None
-    marital_status: Optional[str]
+    marital_status: Optional[MaritalStatus] = None
     nationality: Optional[str]
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]

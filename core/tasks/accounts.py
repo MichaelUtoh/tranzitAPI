@@ -9,19 +9,20 @@ from core.schemas.accounts import PassengerCreateSchema, Status
 from core.models.accounts import Passenger, User
 
 
-def search(
+def search_users(
     id: Optional[int] = None,
     email: Optional[str] = None,
     status: Optional[Status] = None,
     db: Session = Depends(get_db),
 ):
     res = None
-    if id and not (email and status):
+    if id and not email and not status:
         res = db.query(User).filter(User.id == id).first()
     elif email and not id and not status:
         res = db.query(User).filter(User.email == email).first()
     elif status and not id and not email:
         res = db.query(User).filter(User.status == status).all()
+    print(res)
     return res
 
 

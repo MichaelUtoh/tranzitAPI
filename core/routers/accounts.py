@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from core.models.accounts import Passenger, User
@@ -14,7 +15,7 @@ from core.schemas.accounts import (
     UserUpdateSchema,
 )
 from core.database import get_db
-from core.tasks.accounts import create_passenger, search
+from core.tasks.accounts import create_passenger, search_users
 from core.utils import get_current_user
 
 
@@ -26,17 +27,20 @@ router = APIRouter(
 )
 
 
-@router.get("/search", response_model=List[UserBasicSchema])
-def search_users(
-    id: Optional[int] = None,
-    email: Optional[str] = None,
-    status: Optional[Status] = None,
+@router.get("/{id}/details", response_model=UserBasicSchema)
+def get_user(id: int, db: Session = Depends(get_db)):
+    return db.query(User).filter(User.id == id).first()
+
+
+@router.get("/users", response_model=List[UserBasicSchema])
+def get_users(
+    email: Optional[EmailStr] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
-    users = db.query(User).all()
+    users = search_users()
     if not users:
         raise HTTPException(status_code=400, detail="Not found.")
-    users = search(id, email, status, db)
     return users
 
 
