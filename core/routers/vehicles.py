@@ -8,8 +8,7 @@ from core.database import get_db
 from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle
 from core.schemas.vehicles import (
-    ManifestBasic,
-    ManifestCreate,
+    ManifestCreateUpdateSchema,
     ManifestPassengerSchema,
     VehicleBasic,
     VehicleCreate,
@@ -19,10 +18,11 @@ from core.schemas.vehicles import (
     VehicleType,
 )
 from core.tasks.vehicles import (
-    create_vehicle,
-    search,
-    create_manifest,
-    search_manifests,
+    create_manifest_,
+    create_vehicle_,
+    search_vehicles_,
+    search_manifests_,
+    update_manifest_,
 )
 from core.utils import get_current_user
 
@@ -46,7 +46,7 @@ def search_vehicles(
     vehicles = db.query(Vehicle).all()
     if not vehicles:
         raise HTTPException(status_code=400, detail="Not found.")
-    vehicles = search(id, reg_id, status, db)
+    vehicles = search_vehicles_(id, reg_id, status, db)
     return vehicles
 
 
@@ -61,7 +61,7 @@ def add_vehicle(
     is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
     if is_registered:
         raise HTTPException(status_code=400, detail="Not found.")
-    new_vehicle = create_vehicle(data, type, make, model, db)
+    new_vehicle = create_vehicle_(data, type, make, model, db)
     return new_vehicle
 
 
@@ -82,18 +82,30 @@ def report_vehicle(id: int, db: Session = Depends(get_db)):
     return vehicle
 
 
-@router.post("/manifests/create", status_code=201)
-def add_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
-    manifest = create_manifest(data, db)
-    return manifest
-
-
 @router.get("/manifests/search", status_code=200)
 def get_manifest(id: Optional[int] = None, db: Session = Depends(get_db)):
-    manifests = search_manifests(id, db)
+    manifests = search_manifests_(id, db)
     if not manifests:
         raise HTTPException(status_code=400, detail="Not found.")
     return manifests
+
+
+@router.post("/manifests/create", status_code=201)
+def add_manifest(data: ManifestCreateUpdateSchema, db: Session = Depends(get_db)):
+    manifest = create_manifest_(data, db)
+    return manifest
+
+
+@router.put("/manifests/{id}/update", status_code=200)
+def update_manifest(
+    id: int, data: ManifestCreateUpdateSchema, db: Session = Depends(get_db)
+):
+    manifest = update_manifest_(id, data, db)
+    print(manifest)
+    if not manifest:
+        raise HTTPException(status_code=400, detail="Not found.")
+
+    return {"detail": "Success"}
 
 
 @router.patch("/manifests/populate", status_code=201)

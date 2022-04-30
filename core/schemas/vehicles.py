@@ -15,8 +15,6 @@ class VehicleStatus(str, Enum):
 class VehicleType(str, Enum):
     LUXURY_BUS = "luxury bus"
     SPACE_BUS = "space bus"
-    SUV = "sports utility vehicle"
-    CAR = "car"
 
 
 class VehicleMake(str, Enum):
@@ -54,18 +52,16 @@ class VehicleCreate(BaseModel):
         orm_mode = True
 
 
-class ManifestCreate(BaseModel):
+class ManifestCreateUpdateSchema(BaseModel):
     driver_id: int
     vehicle_id: int
     destination: str
-    # passengers: List[int]
 
     class Config:
         orm_mode = True
 
 
 class ManifestBasic(BaseModel):
-    # id: int
     destination: Optional[str] = None
 
 

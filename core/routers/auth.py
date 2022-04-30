@@ -30,20 +30,17 @@ router = APIRouter(
 
 
 @router.post("/login")
-async def login(
-    data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
-    user = db.query(User).filter(User.email == data.username).first()
+async def login(data: LoginSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials.")
 
     if not verify_password(data.password, user.password):
         raise HTTPException(status_code=400, detail="Incorrect password.")
 
-    # access_token = create_access_token(data={"sub": user.email})
-    # data = {"email": user.email, "access_token": access_token, "token_type": "bearer"}
-    # return data
-    return user
+    access_token = create_access_token(data={"sub": user.email})
+    data = {"email": user.email, "access_token": access_token, "token_type": "bearer"}
+    return data
 
 
 @router.post("/register")

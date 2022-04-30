@@ -1,3 +1,4 @@
+import email
 from enum import Enum
 from typing import Optional
 
@@ -51,7 +52,7 @@ class RegisterUserSchema(BaseModel):
 
 
 class LoginSchema(BaseModel):
-    username: str
+    email: EmailStr
     password: str
 
     class Config:

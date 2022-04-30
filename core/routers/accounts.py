@@ -50,7 +50,7 @@ def update_user(
     db: Session = Depends(get_db),
 ):
     update_user_task(id, level, status, data, db)
-    return {"detail": "User account updated successfully."}
+    return {"detail": "Success"}
 
 
 @router.patch("/{id}/add_bank_details", status_code=200)

@@ -7,10 +7,15 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle
-from core.schemas.vehicles import ManifestCreate, VehicleCreate, VehicleStatus
+from core.schemas.accounts import Level
+from core.schemas.vehicles import (
+    ManifestCreateUpdateSchema,
+    VehicleCreate,
+    VehicleStatus,
+)
 
 
-def create_vehicle(data: VehicleCreate, type, make, model, db: Session):
+def create_vehicle_(data: VehicleCreate, type, make, model, db: Session):
     new_vehicle = Vehicle(
         type=type,
         make=make,
@@ -28,7 +33,7 @@ def create_vehicle(data: VehicleCreate, type, make, model, db: Session):
     return new_vehicle
 
 
-def search(
+def search_vehicles_(
     id: Optional[int] = None,
     reg_id: Optional[str] = None,
     status: Optional[VehicleStatus] = None,
@@ -58,9 +63,14 @@ def search(
     return res
 
 
-def create_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
+def create_manifest_(data: ManifestCreateUpdateSchema, db: Session = Depends(get_db)):
     vehicle = db.query(Vehicle).filter(Vehicle.id == data.vehicle_id).first()
-    driver = db.query(User).filter(User.id == data.driver_id)
+    driver = (
+        db.query(User).filter(User.id == data.driver_id, User.level == "driver").first()
+    )
+
+    if not vehicle or not driver:
+        raise HTTPException(status_code=400, detail="Not found")
 
     manifest = Manifest(
         vehicle_id=data.vehicle_id,
@@ -69,16 +79,36 @@ def create_manifest(data: ManifestCreate, db: Session = Depends(get_db)):
         timestamp=datetime.now().date(),
     )
 
-    if not vehicle or not driver:
-        raise HTTPException(status_code=400, detail="Not found")
-
     db.add(manifest)
     db.commit()
     db.refresh(manifest)
     return manifest
 
 
-def search_manifests(id: Optional[int] = None, db: Session = Depends(get_db)):
+def search_manifests_(id: Optional[int] = None, db: Session = Depends(get_db)):
     if id:
         return db.query(Manifest).filter(Manifest.id == id).first()
     return db.query(Manifest).all()
+
+
+def update_manifest_(
+    id: int, data: ManifestCreateUpdateSchema, db: Session = Depends(get_db)
+):
+    # print(id, data, db)
+    driver = (
+        db.query(User)
+        .filter(User.id == data.driver_id, User.level == Level.DRIVER)
+        .first()
+    )
+    if not driver:
+        raise HTTPException(status_code=400, detail="Not found")
+
+    db.query(Manifest).filter(Manifest.id == id).update(
+        {
+            "driver_id": data.driver_id,
+            "vehicle_id": data.vehicle_id,
+            "destination": data.destination,
+        },
+        synchronize_session=False,
+    )
+    db.commit()
