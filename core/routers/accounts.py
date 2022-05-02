@@ -16,7 +16,7 @@ from core.schemas.accounts import (
     UserUpdateSchema,
 )
 from core.database import get_db
-from core.tasks.accounts import create_passenger, update_user_task
+from core.tasks.accounts import create_passenger_, update_user_
 from core.utils import get_current_user
 
 
@@ -49,7 +49,7 @@ def update_user(
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
-    update_user_task(id, level, status, data, db)
+    update_user_(id, level, status, data, db)
     return {"detail": "Success"}
 
 
@@ -72,7 +72,7 @@ def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
 
 @router.post("/passenger/create", status_code=200)
 def add_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
-    passenger = create_passenger(data, db)
+    passenger = create_passenger_(data, db)
     if not passenger:
         raise HTTPException(status_code=400, detail="Something went wrong.")
     return passenger

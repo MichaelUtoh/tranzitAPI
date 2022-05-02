@@ -66,4 +66,4 @@ class ManifestBasic(BaseModel):
 
 
 class ManifestPassengerSchema(BaseModel):
-    pass
+    passenger_ids: List[int] = []

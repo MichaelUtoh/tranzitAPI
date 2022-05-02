@@ -20,6 +20,8 @@ from core.schemas.vehicles import (
 from core.tasks.vehicles import (
     create_manifest_,
     create_vehicle_,
+    depopulate_manifest_,
+    populate_manifest_,
     search_vehicles_,
     search_manifests_,
     update_manifest_,
@@ -101,13 +103,20 @@ def update_manifest(
     id: int, data: ManifestCreateUpdateSchema, db: Session = Depends(get_db)
 ):
     manifest = update_manifest_(id, data, db)
-    print(manifest)
-    if not manifest:
-        raise HTTPException(status_code=400, detail="Not found.")
-
     return {"detail": "Success"}
 
 
-@router.patch("/manifests/populate", status_code=201)
-def populate_manifest(data: ManifestPassengerSchema, db: Session = Depends(get_db)):
-    pass
+@router.post("/manifests/{id}/populate", status_code=200)
+def populate_manifest(
+    id: int, data: ManifestPassengerSchema, db: Session = Depends(get_db)
+):
+    populate_manifest_(id, data, db)
+    return {"detail": "Success"}
+
+
+@router.post("/manifests/{id}/depopulate", status_code=200)
+def depopulate_manifest(
+    id: int, data: ManifestPassengerSchema, db: Session = Depends(get_db)
+):
+    depopulate_manifest_(id, data, db)
+    return {"detail": "Success"}

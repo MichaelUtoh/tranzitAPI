@@ -9,13 +9,20 @@ from core.schemas.accounts import Level, PassengerCreateSchema, Status, UserUpda
 from core.models.accounts import Passenger, User
 
 
-def create_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
+def create_passenger_(data: PassengerCreateSchema, db: Session = Depends(get_db)):
+    if db.query(Passenger).filter(Passenger.email == data.email).first():
+        raise HTTPException(
+            status_code=400, detail="An account with this email already exists"
+        )
+
     passenger = Passenger(
         email=data.email,
         first_name=data.first_name,
         last_name=data.last_name,
-        phone_no=data.phone_no,
+        phone_no_1=data.phone_no_1,
+        phone_no_2=data.phone_no_2,
         gender=data.gender,
+        title=data.title,
         next_of_kin_first_name=data.next_of_kin_first_name,
         next_of_kin_last_name=data.next_of_kin_last_name,
         next_of_kin_phone_no=data.next_of_kin_phone_no,
@@ -27,7 +34,7 @@ def create_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db))
     return passenger
 
 
-def update_user_task(
+def update_user_(
     id: int,
     level: Level,
     status: Status,

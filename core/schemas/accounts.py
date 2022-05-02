@@ -44,6 +44,7 @@ class Title(str, Enum):
     MRS = "mrs"
     MISS = "miss"
     SIR = "sir"
+    MASTER = "master"
 
 
 class RegisterUserSchema(BaseModel):
@@ -117,7 +118,8 @@ class PassengerCreateSchema(BaseModel):
     first_name: str
     last_name: str
     gender: Gender
-    phone_no: str
+    phone_no_1: str
+    phone_no_2: str
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]
     next_of_kin_phone_no: Optional[str]
