@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.database import Base, engine
-from core.routers import accounts, auth, vehicles
+from core.routers import accounts, auth, manifests, vehicles
 
 origins = [
     "http://127.0.0.1:1234",
@@ -27,3 +27,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(accounts.router)
 app.include_router(vehicles.router)
+app.include_router(manifests.router)

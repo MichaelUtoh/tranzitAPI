@@ -61,9 +61,5 @@ class ManifestCreateUpdateSchema(BaseModel):
         orm_mode = True
 
 
-class ManifestBasic(BaseModel):
-    destination: Optional[str] = None
-
-
 class ManifestPassengerSchema(BaseModel):
     passenger_ids: List[int] = []
