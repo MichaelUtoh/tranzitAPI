@@ -38,7 +38,7 @@ class VehicleReport(Base):
     __tablename__ = "reports"
 
     id = Column(Integer, primary_key=True, index=True)
-    report = Column(String(255), index=True)
+    detail = Column(String(255), index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     passenger_id = Column(Integer, ForeignKey("passengers.id"))
     timestamp = Column(String, index=True)
@@ -52,8 +52,10 @@ class VehicleRating(Base):
     id = Column(Integer, primary_key=True, index=True)
     rating = Column(Integer, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
+    passenger_id = Column(Integer, ForeignKey("passengers.id"))
     timestamp = Column(String, index=True)
     vehicle = relationship("Vehicle", back_populates="ratings")
+    passengers = relationship("Passenger", back_populates="ratings")
 
 
 class Manifest(Base):

@@ -8,7 +8,7 @@ from core.schemas.vehicles import (
     ManifestCreateUpdateSchema,
     ManifestPassengerSchema,
 )
-from core.tasks.vehicles import (
+from core.tasks.manifests import (
     create_manifest_,
     depopulate_manifest_,
     populate_manifest_,

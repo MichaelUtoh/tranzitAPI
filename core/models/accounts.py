@@ -66,6 +66,7 @@ class Passenger(Base):
     next_of_kin_last_name = Column(String, index=True, nullable=True)
     next_of_kin_phone_no = Column(String, index=True, nullable=True)
     date_joined = Column(String, index=True)
+    ratings = relationship("VehicleRating", back_populates="passengers")
     reports = relationship("VehicleReport", back_populates="passengers")
     manifests = relationship(
         "Manifest", secondary=manifest_passengers, back_populates="passengers"

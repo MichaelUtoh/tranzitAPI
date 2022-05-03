@@ -6,25 +6,20 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.models.accounts import User
-from core.models.vehicles import Manifest, Vehicle
+from core.models.vehicles import Manifest, Vehicle, VehicleRating
 from core.schemas.vehicles import (
-    ManifestCreateUpdateSchema,
-    ManifestPassengerSchema,
     VehicleBasic,
     VehicleCreate,
     VehicleMake,
     VehicleModel,
+    VehicleRatingSchema,
     VehicleStatus,
     VehicleType,
 )
 from core.tasks.vehicles import (
-    create_manifest_,
+    create_or_update_rating_,
     create_vehicle_,
-    depopulate_manifest_,
-    populate_manifest_,
     search_vehicles_,
-    search_manifests_,
-    update_manifest_,
 )
 from core.utils import get_current_user
 
@@ -82,3 +77,9 @@ def report_vehicle(id: int, db: Session = Depends(get_db)):
     if not vehicle:
         raise HTTPException(status_code=400, detail="Not found.")
     return vehicle
+
+
+@router.patch("/rating", response_model=VehicleRatingSchema, status_code=201)
+def rate_vehicle(data: VehicleRatingSchema, db: Session = Depends(get_db)):
+    create_or_update_rating_(data, db)
+    pass

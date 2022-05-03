@@ -3,8 +3,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from core.schemas.accounts import PassengerBasicSchema
-
 
 class VehicleStatus(str, Enum):
     ACTIVE = "active"
@@ -30,6 +28,14 @@ class VehicleModel(str, Enum):
     HIACE = "hiace"
 
 
+class VehicleRating(str, Enum):
+    EXCELLENT = 1
+    VERY_GOOD = 2
+    GOOD = 3
+    FAIR = 4
+    POOR = 5
+
+
 class VehicleBasic(BaseModel):
     id: int
     reg_id: str
@@ -47,6 +53,15 @@ class VehicleCreate(BaseModel):
     color: str
     in_workshop: Optional[bool] = False
     maintenance_due_date: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class VehicleRatingSchema(BaseModel):
+    vehicle_id: int
+    passenger_id: int
+    rating: Optional[VehicleRating] = int
 
     class Config:
         orm_mode = True
