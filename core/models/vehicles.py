@@ -45,6 +45,9 @@ class VehicleReport(Base):
     vehicle = relationship("Vehicle", back_populates="reports")
     passengers = relationship("Passenger", back_populates="reports")
 
+    def __repr__(self):
+        return f"Passenger: {self.passengers.first_name.title()}, Report: {self.detail[:30]}, Vehicle: {self.vehicle.reg_id}"
+
 
 class VehicleRating(Base):
     __tablename__ = "ratings"
@@ -56,6 +59,9 @@ class VehicleRating(Base):
     timestamp = Column(String, index=True)
     vehicle = relationship("Vehicle", back_populates="ratings")
     passengers = relationship("Passenger", back_populates="ratings")
+
+    def __repr__(self):
+        return f"Passenger: {self.passengers.first_name.title()}, Vehicle: {self.vehicle.reg_id}, Rating: {self.rating}"
 
 
 class Manifest(Base):

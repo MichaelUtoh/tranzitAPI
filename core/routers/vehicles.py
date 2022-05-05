@@ -12,13 +12,17 @@ from core.schemas.vehicles import (
     VehicleCreate,
     VehicleMake,
     VehicleModel,
-    VehicleRatingSchema,
+    VehicleRatingBasicSchema,
+    VehicleRatingCreateSchema,
+    VehicleReportSchema,
     VehicleStatus,
     VehicleType,
 )
 from core.tasks.vehicles import (
     create_or_update_rating_,
+    create_or_update_reoprt_,
     create_vehicle_,
+    fetch_vehicle_ratings_,
     search_vehicles_,
 )
 from core.utils import get_current_user
@@ -71,15 +75,30 @@ def toggle_vehicle_status(
     return db.query(Vehicle).filter(Vehicle.id == id).first()
 
 
-@router.post("/{id}/report", response_model=VehicleBasic, status_code=200)
-def report_vehicle(id: int, db: Session = Depends(get_db)):
-    vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
-    if not vehicle:
-        raise HTTPException(status_code=400, detail="Not found.")
-    return vehicle
+@router.get(
+    "/{id}/ratings",
+    response_model=List[VehicleRatingBasicSchema],
+    status_code=200,
+)
+def fetch_vehicle_ratings(id: int, db: Session = Depends(get_db)):
+    rating_data = fetch_vehicle_ratings_(id, db)
+    return rating_data
 
 
-@router.patch("/rating", response_model=VehicleRatingSchema, status_code=201)
-def rate_vehicle(data: VehicleRatingSchema, db: Session = Depends(get_db)):
-    create_or_update_rating_(data, db)
-    pass
+@router.patch(
+    "/{id}/rating",
+    response_model=VehicleRatingBasicSchema,
+    status_code=201,
+)
+def create_rating(
+    id: int, data: VehicleRatingCreateSchema, db: Session = Depends(get_db)
+):
+    rating = create_or_update_rating_(id, data, db)
+    print(rating)
+    return rating
+
+
+@router.patch("/{id}/report", response_model=VehicleBasic, status_code=200)
+def report_vehicle(id: int, data: VehicleReportSchema, db: Session = Depends(get_db)):
+    create_or_update_reoprt_(id, data, db)
+    return

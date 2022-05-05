@@ -58,10 +58,27 @@ class VehicleCreate(BaseModel):
         orm_mode = True
 
 
-class VehicleRatingSchema(BaseModel):
+class VehicleReportSchema(BaseModel):
     vehicle_id: int
     passenger_id: int
-    rating: Optional[VehicleRating] = int
+    detail: str
+
+    class Config:
+        orm_mode = True
+
+
+class VehicleRatingBasicSchema(BaseModel):
+    vehicle_id: int
+    passenger_id: int
+    rating: int
+
+    class Config:
+        orm_mode = True
+
+
+class VehicleRatingCreateSchema(BaseModel):
+    passenger_id: int
+    rating: int
 
     class Config:
         orm_mode = True

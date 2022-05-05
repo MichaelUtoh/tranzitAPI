@@ -129,6 +129,9 @@ class PassengerCreateSchema(BaseModel):
 
 
 class PassengerBasicSchema(BaseModel):
-    email: EmailStr
-    first_name: str
-    last_name: str
+    email: Optional[EmailStr]
+    first_name: Optional[str]
+    last_name: Optional[str]
+
+    class Config:
+        orm_mode = True
