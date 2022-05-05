@@ -145,7 +145,18 @@ def add_vehicle_location_(id: int, db: Session = Depends(get_db)):
     return db
 
 
-def start_trip_(id: int, data, db: Session = Depends(get_db)):
+def create_vehicle_location_(id: int, data, db: Session = Depends(get_db)):
     vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
     if not vehicle:
         raise HTTPException(status_code=400, detail="Not found")
+
+    location = Location(
+        departure_terminal=data.departure_terminal,
+        destination_terminal=data.destination_terminal,
+        vehicle_id=vehicle.id,
+        timestamp=datetime.now().date(),
+    )
+    db.add(location)
+    db.commit()
+    db.refresh(location)
+    return location

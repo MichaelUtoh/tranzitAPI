@@ -10,7 +10,7 @@ from core.models.vehicles import Manifest, Vehicle, VehicleRating
 from core.schemas.vehicles import (
     VehicleBasic,
     VehicleCreate,
-    VehicleLocationCreateSchema,
+    VehicleLocationBasicSchema,
     VehicleMake,
     VehicleModel,
     VehicleRatingBasicSchema,
@@ -24,9 +24,9 @@ from core.tasks.vehicles import (
     create_or_update_rating_,
     create_or_update_report_,
     create_vehicle_,
+    create_vehicle_location_,
     fetch_vehicle_ratings_,
     search_vehicles_,
-    start_trip_,
 )
 from core.utils import get_current_user
 
@@ -111,12 +111,13 @@ def create_vehicle_report(
     return
 
 
-@router.post("/{id}/start_trip", status_code=200)
-def start_trip(
-    id: int,
-    data: VehicleLocationCreateSchema,
-    db: Session = Depends(get_db),
+@router.post(
+    "/{id}/add_location",
+    response_model=VehicleLocationBasicSchema,
+    status_code=200,
+)
+def create_vehicle_location(
+    id: int, data: VehicleLocationBasicSchema, db: Session = Depends(get_db)
 ):
-    vehicle_data = start_trip_(id, data, db)
+    vehicle_data = create_vehicle_location_(id, data, db)
     return
-

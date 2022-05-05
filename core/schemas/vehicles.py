@@ -101,13 +101,11 @@ class ManifestPassengerSchema(BaseModel):
     passenger_ids: List[int] = []
 
 
-class VehicleLocationCreateSchema(BaseModel):
+class VehicleLocationBasicSchema(BaseModel):
     departure_terminal: str
     destination_terminal: str
-    current_latitude: Optional[str]
-    current_longitude: Optional[str]
-    started_trip: Optional[bool]
-    ended_trip: Optional[bool]
+    started_trip: Optional[bool] = False
+    ended_trip: Optional[bool] = False
 
     class Config:
         orm_mode = True
