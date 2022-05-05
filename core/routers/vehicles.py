@@ -10,20 +10,23 @@ from core.models.vehicles import Manifest, Vehicle, VehicleRating
 from core.schemas.vehicles import (
     VehicleBasic,
     VehicleCreate,
+    VehicleLocationCreateSchema,
     VehicleMake,
     VehicleModel,
     VehicleRatingBasicSchema,
     VehicleRatingCreateSchema,
+    VehicleReportBasicSchema,
     VehicleReportSchema,
     VehicleStatus,
     VehicleType,
 )
 from core.tasks.vehicles import (
     create_or_update_rating_,
-    create_or_update_reoprt_,
+    create_or_update_report_,
     create_vehicle_,
     fetch_vehicle_ratings_,
     search_vehicles_,
+    start_trip_,
 )
 from core.utils import get_current_user
 
@@ -90,15 +93,30 @@ def fetch_vehicle_ratings(id: int, db: Session = Depends(get_db)):
     response_model=VehicleRatingBasicSchema,
     status_code=201,
 )
-def create_rating(
+def create_vehicle_rating(
     id: int, data: VehicleRatingCreateSchema, db: Session = Depends(get_db)
 ):
-    rating = create_or_update_rating_(id, data, db)
-    print(rating)
-    return rating
+    rating_data = create_or_update_rating_(id, data, db)
+    return rating_data
 
 
-@router.patch("/{id}/report", response_model=VehicleBasic, status_code=200)
-def report_vehicle(id: int, data: VehicleReportSchema, db: Session = Depends(get_db)):
-    create_or_update_reoprt_(id, data, db)
+@router.patch("/{id}/report", status_code=200)
+def create_vehicle_report(
+    id: int,
+    passenger_id: int,
+    data: VehicleReportSchema,
+    db: Session = Depends(get_db),
+):
+    report_data = create_or_update_report_(id, passenger_id, data, db)
     return
+
+
+@router.post("/{id}/start_trip", status_code=200)
+def start_trip(
+    id: int,
+    data: VehicleLocationCreateSchema,
+    db: Session = Depends(get_db),
+):
+    vehicle_data = start_trip_(id, data, db)
+    return
+

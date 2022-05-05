@@ -86,14 +86,15 @@ class Location(Base):
     __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True, index=True)
-    departure_terminal = Column(String(50), index=True, nullable=True)
-    destination_terminal = Column(String(50), index=True, nullable=True)
+    departure_terminal = Column(String(50), index=True)
+    destination_terminal = Column(String(50), index=True)
     current_latitude = Column(String(20), index=True, nullable=True)
     current_longitude = Column(String(20), index=True, nullable=True)
     started_trip = Column(Boolean, default=False, index=True)
     ended_trip = Column(Boolean, default=False, index=True)
+    timestamp = Column(String, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     vehicle = relationship("Vehicle", back_populates="locations")
 
     def __repr__(self):
-        return self.destination_terminal
+        return f"{self.vehicle.reg_id}:  {self.destination_terminal} to {self.destination_terminal}"

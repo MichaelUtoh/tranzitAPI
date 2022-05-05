@@ -58,9 +58,13 @@ class VehicleCreate(BaseModel):
         orm_mode = True
 
 
-class VehicleReportSchema(BaseModel):
-    vehicle_id: int
+class VehicleReportBasicSchema(BaseModel):
     passenger_id: int
+    vehicle_id: int
+    detail: str
+
+
+class VehicleReportSchema(BaseModel):
     detail: str
 
     class Config:
@@ -95,3 +99,23 @@ class ManifestCreateUpdateSchema(BaseModel):
 
 class ManifestPassengerSchema(BaseModel):
     passenger_ids: List[int] = []
+
+
+class VehicleLocationCreateSchema(BaseModel):
+    departure_terminal: str
+    destination_terminal: str
+    current_latitude: Optional[str]
+    current_longitude: Optional[str]
+    started_trip: Optional[bool]
+    ended_trip: Optional[bool]
+
+    class Config:
+        orm_mode = True
+
+
+class VehicleLocationCoordSchema(BaseModel):
+    current_latitude: str
+    current_longitude: str
+
+    class Config:
+        orm_mode = True

@@ -5,10 +5,12 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.models.vehicles import Vehicle, VehicleRating, VehicleReport
+from core.models.accounts import Passenger
+from core.models.vehicles import Location, Vehicle, VehicleRating, VehicleReport
 from core.schemas.vehicles import (
     VehicleCreate,
     VehicleRatingCreateSchema,
+    VehicleReportBasicSchema,
     VehicleStatus,
 )
 
@@ -61,13 +63,28 @@ def search_vehicles_(
     return res
 
 
-def create_or_update_reoprt_(id: int, data: VehicleReport, db: Session):
+def create_or_update_report_(
+    id: int,
+    passenger_id: int,
+    data: VehicleReportBasicSchema,
+    db: Session = Depends(get_db),
+):
     vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
-    if not vehicle:
+    passenger = db.query(Passenger).filter(Passenger.id == passenger_id).first()
+
+    if not vehicle or not passenger:
         raise HTTPException(status_code=400, detail="Not found.")
 
-    report = db.query(VehicleReport).filter(VehicleReport.vehicle_id == vehicle.id)
-    pass
+    report = VehicleReport(
+        vehicle_id=vehicle.id,
+        passenger_id=passenger.id,
+        detail=data.detail,
+        timestamp=datetime.now().now().date(),
+    )
+    db.add(report)
+    db.commit()
+    db.refresh(report)
+    return report
 
 
 def create_or_update_rating_(
@@ -102,9 +119,33 @@ def create_or_update_rating_(
 
 
 def fetch_vehicle_ratings_(id: Optional[int] = None, db: Session = Depends(get_db)):
+    vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
+    if not vehicle:
+        raise HTTPException(status_code=400, detail="Not found")
+    return vehicle.ratings
 
+
+def add_vehicle_location_(id: int, db: Session = Depends(get_db)):
     vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
     if not vehicle:
         raise HTTPException(status_code=400, detail="Not found")
 
-    return vehicle.ratings
+    location = Location(
+        departure_terminal=None,
+        destination_terminal=None,
+        current_latitude=None,
+        current_longitude=None,
+        started_trip=None,
+        ended_trip=None,
+        timestamp=datetime.now().date(),
+    )
+    db.add(location)
+    db.commit()
+    db.refresh(location)
+    return db
+
+
+def start_trip_(id: int, data, db: Session = Depends(get_db)):
+    vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
+    if not vehicle:
+        raise HTTPException(status_code=400, detail="Not found")
