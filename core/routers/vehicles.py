@@ -11,11 +11,11 @@ from core.schemas.vehicles import (
     VehicleBasic,
     VehicleCreate,
     VehicleLocationBasicSchema,
+    VehicleLocationDetailsSchema,
     VehicleMake,
     VehicleModel,
     VehicleRatingBasicSchema,
     VehicleRatingCreateSchema,
-    VehicleReportBasicSchema,
     VehicleReportSchema,
     VehicleStatus,
     VehicleType,
@@ -24,7 +24,7 @@ from core.tasks.vehicles import (
     create_or_update_rating_,
     create_or_update_report_,
     create_vehicle_,
-    create_vehicle_location_,
+    start_trip_,
     fetch_vehicle_ratings_,
     search_vehicles_,
 )
@@ -112,12 +112,28 @@ def create_vehicle_report(
 
 
 @router.post(
-    "/{id}/add_location",
-    response_model=VehicleLocationBasicSchema,
+    "/{id}/start_trip",
+    response_model=VehicleLocationDetailsSchema,
     status_code=200,
 )
-def create_vehicle_location(
-    id: int, data: VehicleLocationBasicSchema, db: Session = Depends(get_db)
+def start_trip(
+    id: int,
+    data: VehicleLocationBasicSchema,
+    db: Session = Depends(get_db),
 ):
-    vehicle_data = create_vehicle_location_(id, data, db)
-    return
+    vehicle_data = start_trip_(id, data, db)
+    return vehicle_data
+
+
+@router.post(
+    "/{id}/end_trip",
+    response_model=VehicleLocationDetailsSchema,
+    status_code=200,
+)
+def end_trip(
+    id: int,
+    data: VehicleLocationBasicSchema,
+    db: Session = Depends(get_db),
+):
+    vehicle_data = None
+    return vehicle_data

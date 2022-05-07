@@ -13,10 +13,16 @@ from core.schemas.accounts import (
     UserBasicSchema,
     PassengerCreateSchema,
     UserDetailsSchema,
+    UserStatusUpdateSchema,
     UserUpdateSchema,
 )
 from core.database import get_db
-from core.tasks.accounts import create_passenger_, update_user_
+from core.tasks.accounts import (
+    create_passenger_,
+    update_user_,
+    update_user_bank_details_,
+    update_user_status_,
+)
 from core.utils import get_current_user
 
 
@@ -44,29 +50,26 @@ def get_users(db: Session = Depends(get_db)):
 @router.patch("/{id}/update")
 def update_user(
     id: int,
-    level: Level,
-    status: Status,
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
-    update_user_(id, level, status, data, db)
+    update_user_(id, data, db)
     return {"detail": "Success"}
 
 
-@router.patch("/{id}/add_bank_details", status_code=200)
+@router.patch("/{id}/bank_details", status_code=200)
 def add_bank_details(
-    id: int, data: UserBankDetailSchema, db: Session = Depends(get_db)
+    id: int,
+    data: UserBankDetailSchema,
+    db: Session = Depends(get_db),
 ):
-    db.query(User).filter(User.id == id).update(
-        {"bank": data.bank, "account_no": data.account_no, "bvn": data.bvn}
-    )
-    return {"detail": "User bank updated successfully."}
+    update_user_bank_details_(id, data, db)
+    return {"detail": "Success"}
 
 
-@router.patch("/{id}/toggle_status", status_code=200)
-def toggle_status(id: int, status: Status, db: Session = Depends(get_db)):
-    db.query(User).filter(User.id == id).update({"status": status})
-    db.commit()
+@router.patch("/{id}/update_status", status_code=200)
+def update_status(id: int, data: UserStatusUpdateSchema, db: Session = Depends(get_db)):
+    update_user_status_(id, data, db)
     return
 
 

@@ -9,7 +9,6 @@ from core.models.accounts import User
 from core.schemas.accounts import (
     LoginSchema,
     RegisterUserSchema,
-    UserBasicSchema,
 )
 from core.schemas.auth import Token
 from core.database import get_db
@@ -53,7 +52,7 @@ def register(data: RegisterUserSchema, db: Session = Depends(get_db)):
         )
 
     user = User(
-        user_id=str(uuid4()),
+        employee_id=str(uuid4()),
         email=data.email,
         password=get_password_hash(data.password),
         status="active",

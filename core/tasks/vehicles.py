@@ -9,6 +9,7 @@ from core.models.accounts import Passenger
 from core.models.vehicles import Location, Vehicle, VehicleRating, VehicleReport
 from core.schemas.vehicles import (
     VehicleCreate,
+    VehicleLocationBasicSchema,
     VehicleRatingCreateSchema,
     VehicleReportBasicSchema,
     VehicleStatus,
@@ -145,14 +146,25 @@ def add_vehicle_location_(id: int, db: Session = Depends(get_db)):
     return db
 
 
-def create_vehicle_location_(id: int, data, db: Session = Depends(get_db)):
+def start_trip_(id: int, data, db: Session = Depends(get_db)):
+    """
+    To start trip, add location details to vehicle
+    """
     vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
     if not vehicle:
         raise HTTPException(status_code=400, detail="Not found")
 
+    if vehicle.status in [VehicleStatus.DECOMMISSIONED, VehicleStatus.MAINTENANCE]:
+        raise HTTPException(status_code=400, detail="Vehicle unavailable")
+
+    print(vehicle.locations)
+
     location = Location(
         departure_terminal=data.departure_terminal,
         destination_terminal=data.destination_terminal,
+        current_trip=True,
+        started_trip=True,
+        ended_trip=False,
         vehicle_id=vehicle.id,
         timestamp=datetime.now().date(),
     )
@@ -160,3 +172,11 @@ def create_vehicle_location_(id: int, data, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(location)
     return location
+
+
+def end_trip_(
+    location_id: int,
+    data: VehicleLocationBasicSchema,
+    db: Session = Depends(get_db),
+):
+    pass

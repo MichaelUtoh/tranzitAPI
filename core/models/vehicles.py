@@ -1,3 +1,4 @@
+from email.policy import default
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
@@ -68,10 +69,10 @@ class Manifest(Base):
     __tablename__ = "manifests"
 
     id = Column(Integer, primary_key=True, index=True)
-    destination = Column(String(50))
     driver_id = Column(Integer, ForeignKey("users.id"))
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     timestamp = Column(String)
+    location = relationship("Location", back_populates="manifest")
     vehicle = relationship("Vehicle", back_populates="manifests")
     driver = relationship("User", back_populates="manifests")
     passengers = relationship(
@@ -88,13 +89,16 @@ class Location(Base):
     id = Column(Integer, primary_key=True, index=True)
     departure_terminal = Column(String(50), index=True)
     destination_terminal = Column(String(50), index=True)
+    current_trip = Column(Boolean)
     current_latitude = Column(String(20), index=True, nullable=True)
     current_longitude = Column(String(20), index=True, nullable=True)
     started_trip = Column(Boolean, default=False)
     ended_trip = Column(Boolean, default=False)
     timestamp = Column(String, index=True)
+    manifest_id = Column(Integer, ForeignKey("manifests.id"))
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
     vehicle = relationship("Vehicle", back_populates="locations")
+    manifest = relationship("Manifest", back_populates="location")
 
     def __repr__(self):
         return f"{self.vehicle.reg_id}:  {self.destination_terminal} to {self.destination_terminal}"

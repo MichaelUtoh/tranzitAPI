@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String, index=True)
+    employee_id = Column(String, index=True, nullable=True)
     first_name = Column(String(30), index=True, nullable=True)
     middle_name = Column(String(30), index=True, nullable=True)
     last_name = Column(String(30), index=True, nullable=True)

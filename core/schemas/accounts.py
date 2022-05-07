@@ -61,7 +61,7 @@ class LoginSchema(BaseModel):
 
 
 class UserBasicSchema(BaseModel):
-    user_id: Optional[str]
+    employee_id: Optional[str]
     email: EmailStr
     first_name: Optional[str]
     last_name: Optional[str]
@@ -94,10 +94,19 @@ class UserUpdateSchema(BaseModel):
     phone_no_1: Optional[str]
     phone_no_2: Optional[str]
     gender: Gender
-    marital_status: Optional[MaritalStatus] = "single"
+    level: Level
+    status: Status
+    marital_status: Optional[MaritalStatus] = MaritalStatus.SINGLE
     nationality: Optional[str]
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class UserStatusUpdateSchema(BaseModel):
+    status: Status
 
     class Config:
         orm_mode = True
