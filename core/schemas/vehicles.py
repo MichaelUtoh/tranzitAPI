@@ -1,3 +1,5 @@
+import datetime
+
 from enum import Enum
 from typing import List, Optional
 
@@ -45,9 +47,12 @@ class VehicleBasic(BaseModel):
 
 
 class VehicleCreate(BaseModel):
+    type: VehicleType
+    make: VehicleMake
+    model: VehicleModel
     reg_id: str
     color: str
-    maintenance_due_date: Optional[str] = None
+    maintenance_due_date: Optional[datetime.date] = None
 
     class Config:
         orm_mode = True

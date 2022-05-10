@@ -57,15 +57,12 @@ def search_vehicles(
 @router.post("/create", status_code=200)
 def add_vehicle(
     data: VehicleCreate,
-    type: VehicleType,
-    make: VehicleMake,
-    model: VehicleModel,
     db: Session = Depends(get_db),
 ):
     is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
     if is_registered:
         raise HTTPException(status_code=400, detail="Not found.")
-    new_vehicle = create_vehicle_(data, type, make, model, db)
+    new_vehicle = create_vehicle_(data, db)
     return new_vehicle
 
 

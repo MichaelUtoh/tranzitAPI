@@ -16,11 +16,11 @@ from core.schemas.vehicles import (
 )
 
 
-def create_vehicle_(data: VehicleCreate, type, make, model, db: Session):
+def create_vehicle_(data: VehicleCreate, db: Session):
     new_vehicle = Vehicle(
-        type=type,
-        make=make,
-        model=model,
+        type=data.type,
+        make=data.make,
+        model=data.model,
         reg_id=data.reg_id,
         color=data.color,
         maintenance_due_date=data.maintenance_due_date,
