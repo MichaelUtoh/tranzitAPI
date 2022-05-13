@@ -59,9 +59,6 @@ def add_vehicle(
     data: VehicleCreate,
     db: Session = Depends(get_db),
 ):
-    is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
-    if is_registered:
-        raise HTTPException(status_code=400, detail="Not found.")
     new_vehicle = create_vehicle_(data, db)
     return new_vehicle
 

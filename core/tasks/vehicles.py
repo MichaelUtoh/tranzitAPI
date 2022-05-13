@@ -6,7 +6,13 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.models.accounts import Passenger
-from core.models.vehicles import Location, Vehicle, VehicleRating, VehicleReport
+from core.models.vehicles import (
+    Location,
+    Manifest,
+    Vehicle,
+    VehicleRating,
+    VehicleReport,
+)
 from core.schemas.vehicles import (
     VehicleCreate,
     VehicleLocationBasicSchema,
@@ -17,6 +23,12 @@ from core.schemas.vehicles import (
 
 
 def create_vehicle_(data: VehicleCreate, db: Session):
+    is_registered = db.query(Vehicle).filter(Vehicle.reg_id == data.reg_id).first()
+    if is_registered:
+        raise HTTPException(
+            status_code=400,
+            detail="Vehicle with this given registration number exists.",
+        )
     new_vehicle = Vehicle(
         type=data.type,
         make=data.make,
@@ -150,14 +162,9 @@ def start_trip_(id: int, data, db: Session = Depends(get_db)):
     """
     To start trip, add location details to vehicle
     """
-    vehicle = db.query(Vehicle).filter(Vehicle.id == id).first()
-    if not vehicle:
+    manifest = db.query(Manifest).filter(Manifest.id == id).first()
+    if not manifest:
         raise HTTPException(status_code=400, detail="Not found")
-
-    if vehicle.status in [VehicleStatus.DECOMMISSIONED, VehicleStatus.MAINTENANCE]:
-        raise HTTPException(status_code=400, detail="Vehicle unavailable")
-
-    print(vehicle.locations)
 
     location = Location(
         departure_terminal=data.departure_terminal,
@@ -165,7 +172,7 @@ def start_trip_(id: int, data, db: Session = Depends(get_db)):
         current_trip=True,
         started_trip=True,
         ended_trip=False,
-        vehicle_id=vehicle.id,
+        manifest_id=manifest.id,
         timestamp=datetime.now().date(),
     )
     db.add(location)

@@ -52,7 +52,7 @@ class VehicleCreate(BaseModel):
     model: VehicleModel
     reg_id: str
     color: str
-    maintenance_due_date: Optional[datetime.date] = None
+    maintenance_due_date: Optional[datetime.date] = ""
 
     class Config:
         orm_mode = True
