@@ -100,6 +100,7 @@ class UserUpdateSchema(BaseModel):
     nationality: Optional[str]
     next_of_kin_first_name: Optional[str]
     next_of_kin_last_name: Optional[str]
+    next_of_kin_phone_no: Optional[str]
 
     class Config:
         orm_mode = True

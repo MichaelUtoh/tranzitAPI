@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from core.models.accounts import Passenger, User
 from core.schemas.accounts import (
     Level,
+    PassengerBasicSchema,
     Status,
     UserBankDetailSchema,
     UserBasicSchema,
@@ -47,14 +48,14 @@ def get_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.patch("/{id}/update")
+@router.patch("/{id}/update", response_model=UserBankDetailSchema)
 def update_user(
     id: int,
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
     update_user_(id, data, db)
-    return {"detail": "Success"}
+    return
 
 
 @router.patch("/{id}/bank_details", status_code=200)
@@ -73,7 +74,20 @@ def update_status(id: int, data: UserStatusUpdateSchema, db: Session = Depends(g
     return
 
 
-@router.post("/passenger/create", status_code=200)
+@router.get(
+    "/passenger/{id}/details",
+    response_model=PassengerBasicSchema,
+    status_code=200,
+)
+def fetch_passenger_details(id: int, db: Session = Depends(get_db)):
+    pass
+
+
+@router.post(
+    "/passenger/create",
+    response_model=PassengerBasicSchema,
+    status_code=200,
+)
 def add_passenger(data: PassengerCreateSchema, db: Session = Depends(get_db)):
     passenger = create_passenger_(data, db)
     if not passenger:

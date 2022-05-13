@@ -22,6 +22,7 @@ class User(Base):
     nationality = Column(String, index=True, nullable=True)
     next_of_kin_first_name = Column(String, index=True, nullable=True)
     next_of_kin_last_name = Column(String, index=True, nullable=True)
+    next_of_kin_phone_no = Column(String, index=True, nullable=True)
     level = Column(String, index=True)
     status = Column(String, index=True)
     last_login = Column(String, index=True, nullable=True)

@@ -1,11 +1,15 @@
-from fastapi import FastAPI
+from pathlib import Path
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from core.database import Base, engine
 from core.routers import accounts, auth, manifests, vehicles
@@ -17,12 +21,19 @@ origins = [
     "http://localhost:3000",
 ]
 
+BASE_PATH = Path(__file__).resolve().parent
+TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(docs_url=None, redoc_url=None, title="Tranzit")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+def homepage(request: Request):
+    return TEMPLATES.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/docs", include_in_schema=False)
