@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import Depends, HTTPException
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -16,14 +17,28 @@ from core.schemas.accounts import (
 from core.models.accounts import Passenger, User
 
 
+def fetch_user_details_(
+    id: Optional[int],
+    email: Optional[EmailStr] = None,
+    db: Session = Depends(get_db),
+):
+    user_data = None
+    if id:
+        user_data = db.query(User).filter(User.id == id).first()
+
+    elif email and not id:
+        user_data = db.query(User).filter(User.email == email).first()
+
+    return user_data
+
+
 def update_user_(
-    id: int,
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
-    if not db.query(User).filter(User.id == id).first():
+    if not db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status_code=403, detail="Not found")
-    db.query(User).filter(User.id == id).update(
+    db.query(User).filter(User.email == data.email).update(
         {
             "first_name": data.first_name,
             "middle_name": data.middle_name,

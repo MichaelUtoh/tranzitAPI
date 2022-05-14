@@ -24,6 +24,7 @@ from core.tasks.vehicles import (
     create_or_update_rating_,
     create_or_update_report_,
     create_vehicle_,
+    end_trip_,
     start_trip_,
     fetch_vehicle_ratings_,
     search_vehicles_,
@@ -129,5 +130,5 @@ def end_trip(
     data: VehicleLocationBasicSchema,
     db: Session = Depends(get_db),
 ):
-    vehicle_data = None
+    vehicle_data = end_trip_(id, data, db)
     return vehicle_data

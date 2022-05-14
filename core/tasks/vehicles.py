@@ -166,6 +166,9 @@ def start_trip_(id: int, data, db: Session = Depends(get_db)):
     if not manifest:
         raise HTTPException(status_code=400, detail="Not found")
 
+    # TODO update all locations for this vehicle manifest to reflect latest trip
+    locations = db.query(Location).update({"current_trip": False})
+
     location = Location(
         departure_terminal=data.departure_terminal,
         destination_terminal=data.destination_terminal,
@@ -182,8 +185,12 @@ def start_trip_(id: int, data, db: Session = Depends(get_db)):
 
 
 def end_trip_(
-    location_id: int,
+    id: int,
     data: VehicleLocationBasicSchema,
     db: Session = Depends(get_db),
 ):
-    pass
+    location = db.query(Location).filter(Location.id == id).first()
+    if not location:
+        raise HTTPException(status_code=400, detail="Not found")
+    # print(location.current_trip)
+    return location

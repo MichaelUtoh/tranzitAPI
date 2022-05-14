@@ -47,12 +47,12 @@ class VehicleBasic(BaseModel):
 
 
 class VehicleCreate(BaseModel):
-    type: VehicleType
-    make: VehicleMake
-    model: VehicleModel
+    type: str
+    make: str
+    model: str
     reg_id: str
     color: str
-    maintenance_due_date: Optional[datetime.date] = ""
+    maintenance_due_date: datetime.date
 
     class Config:
         orm_mode = True
