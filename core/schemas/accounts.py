@@ -96,7 +96,6 @@ class UserUpdateSchema(BaseModel):
     phone_no_2: Optional[str]
     gender: Gender
     level: Level
-    status: Status
     marital_status: Optional[MaritalStatus] = MaritalStatus.SINGLE
     nationality: Optional[str]
     next_of_kin_first_name: Optional[str]

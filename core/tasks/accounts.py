@@ -52,7 +52,7 @@ def update_user_(
             "next_of_kin_first_name": data.next_of_kin_first_name,
             "next_of_kin_last_name": data.next_of_kin_last_name,
             "level": data.level,
-            "status": data.status,
+            "status": Status.ACTIVE,
         },
         synchronize_session=False,
     )
