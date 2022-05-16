@@ -18,7 +18,8 @@ from core.models.accounts import User
 from core.schemas.auth import TokenData
 from core.database import get_db
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 load_dotenv()
 

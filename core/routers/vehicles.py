@@ -8,17 +8,13 @@ from core.database import get_db
 from core.models.accounts import User
 from core.models.vehicles import Manifest, Vehicle, VehicleRating
 from core.schemas.vehicles import (
-    VehicleBasic,
     VehicleCreate,
     VehicleLocationBasicSchema,
     VehicleLocationDetailsSchema,
-    VehicleMake,
-    VehicleModel,
     VehicleRatingBasicSchema,
     VehicleRatingCreateSchema,
     VehicleReportSchema,
     VehicleStatus,
-    VehicleType,
 )
 from core.tasks.vehicles import (
     create_or_update_rating_,
@@ -36,7 +32,7 @@ router = APIRouter(
     prefix="/vehicles",
     tags=["vehicles"],
     # responses={404: {"description": "Not found"}},
-    # dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user)],
 )
 
 

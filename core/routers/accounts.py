@@ -33,7 +33,7 @@ router = APIRouter(
     prefix="/accounts",
     tags=["accounts"],
     responses={404: {"description": "Not found"}},
-    # dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user)],
 )
 
 
