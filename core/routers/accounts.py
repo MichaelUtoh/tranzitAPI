@@ -15,6 +15,7 @@ from core.schemas.accounts import (
     UserBasicSchema,
     PassengerCreateSchema,
     UserDetailsSchema,
+    UserLevelUpdateSchema,
     UserStatusUpdateSchema,
     UserUpdateSchema,
 )
@@ -24,6 +25,7 @@ from core.tasks.accounts import (
     fetch_user_details_,
     update_user_,
     update_user_bank_details_,
+    update_user_level_,
     update_user_status_,
 )
 from core.utils import get_current_user
@@ -49,13 +51,14 @@ def get_user(
 
 @router.get("/users", response_model=List[UserBasicSchema])
 def get_users(db: Session = Depends(get_db)):
+    # TODO Only admin authorization for this endpoint
     users = db.query(User).all()
     if not users:
         raise HTTPException(status_code=400, detail="Not found.")
     return users
 
 
-@router.patch("/update", response_model=UserBankDetailSchema)
+@router.patch("/update", response_model=UserDetailsSchema)
 def update_user(
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
@@ -74,10 +77,16 @@ def add_bank_details(
     return {"detail": "Success"}
 
 
-@router.patch("/{id}/update_status", status_code=200)
+@router.patch("/{id}/update_status", response_model=UserDetailsSchema, status_code=200)
 def update_status(id: int, data: UserStatusUpdateSchema, db: Session = Depends(get_db)):
     update_user_status_(id, data, db)
     return
+
+
+@router.patch("/{id}/update_level", response_model=UserBasicSchema, status_code=200)
+def update_level(id: int, data: UserLevelUpdateSchema, db: Session = Depends(get_db)):
+    user_data = update_user_level_(id, data, db)
+    return user_data
 
 
 @router.get(

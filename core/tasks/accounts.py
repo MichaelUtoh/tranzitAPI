@@ -11,6 +11,7 @@ from core.schemas.accounts import (
     PassengerCreateSchema,
     Status,
     UserBankDetailSchema,
+    UserLevelUpdateSchema,
     UserStatusUpdateSchema,
     UserUpdateSchema,
 )
@@ -22,14 +23,15 @@ def fetch_user_details_(
     email: Optional[EmailStr] = None,
     db: Session = Depends(get_db),
 ):
-    user_data = None
+    # TODO Only admin authorization for this endpoint
+    user = None
     if id:
-        user_data = db.query(User).filter(User.id == id).first()
+        user = db.query(User).filter(User.id == id).first()
 
     elif email and not id:
-        user_data = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.email == email).first()
 
-    return user_data
+    return user
 
 
 def update_user_(
@@ -60,13 +62,31 @@ def update_user_(
 
 
 def update_user_status_(
-    id: int, data: UserStatusUpdateSchema, db: Session = Depends(get_db)
+    id: int,
+    data: UserStatusUpdateSchema,
+    db: Session = Depends(get_db),
 ):
+    # TODO Only admin authorization for this endpoint
     if not db.query(User).filter(User.id == id).first():
         raise HTTPException(status_code=403, detail="Not found")
 
     db.query(User).filter(User.id == id).update({"status": data.status})
     db.commit()
+
+
+def update_user_level_(
+    id: int,
+    data: UserLevelUpdateSchema,
+    db: Session = Depends(get_db),
+):
+    # TODO Only admin authorization for this endpoint
+    user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=403, detail="Not found")
+
+    db.query(User).filter(User.id == id).update({"level": data.level})
+    db.commit()
+    return user
 
 
 def update_user_bank_details_(

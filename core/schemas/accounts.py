@@ -113,6 +113,13 @@ class UserStatusUpdateSchema(BaseModel):
         orm_mode = True
 
 
+class UserLevelUpdateSchema(BaseModel):
+    level: Level
+
+    class Config:
+        orm_mode = True
+
+
 class UserBankDetailSchema(BaseModel):
     bank: str
     account_no: str
