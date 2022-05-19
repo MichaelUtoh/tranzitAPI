@@ -42,14 +42,24 @@ class UserDocument(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     document_type = Column(String, index=True)
-    document_name = Column(String, index=True)
+    # document_name = Column(String, index=True)
     document_no = Column(String, index=True)
     document_expiry_date = Column(String, index=True, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     users = relationship("User", back_populates="documents")
+    images = relationship("UserDocumentImage", back_populates="document")
 
     def __repr__(self):
         return f"{self.document_type} {self.document_number}"
+
+
+class UserDocumentImage(Base):
+    __tablename__ = "document_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    image_url = Column(String(255), index=True)
+    document_id = Column(Integer, ForeignKey("documents.id"))
+    document = relationship("UserDocument", back_populates="images")
 
 
 class Passenger(Base):

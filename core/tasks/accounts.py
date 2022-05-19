@@ -11,11 +11,12 @@ from core.schemas.accounts import (
     PassengerCreateSchema,
     Status,
     UserBankDetailSchema,
+    UserDocsSchema,
     UserLevelUpdateSchema,
     UserStatusUpdateSchema,
     UserUpdateSchema,
 )
-from core.models.accounts import Passenger, User
+from core.models.accounts import Passenger, User, UserDocument
 
 
 def fetch_user_details_(
@@ -38,8 +39,11 @@ def update_user_(
     data: UserUpdateSchema,
     db: Session = Depends(get_db),
 ):
-    if not db.query(User).filter(User.email == data.email).first():
+    user = db.query(User).filter(User.email == data.email).first()
+
+    if not user:
         raise HTTPException(status_code=403, detail="Not found")
+
     db.query(User).filter(User.email == data.email).update(
         {
             "first_name": data.first_name,
@@ -53,12 +57,14 @@ def update_user_(
             "nationality": data.nationality,
             "next_of_kin_first_name": data.next_of_kin_first_name,
             "next_of_kin_last_name": data.next_of_kin_last_name,
+            "next_of_kin_phone_no": data.next_of_kin_phone_no,
             "level": data.level,
             "status": Status.ACTIVE,
         },
         synchronize_session=False,
     )
     db.commit()
+    return user
 
 
 def update_user_status_(
@@ -104,6 +110,33 @@ def update_user_bank_details_(
     db.commit()
 
 
+def add_employee_document_(
+    id: int,
+    data: UserDocsSchema,
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == id).first()
+
+    if not user:
+        raise HTTPException(status_code=400, detail="Not found.")
+
+    if not user.first_name or not user.status or not user.level:
+        raise HTTPException(status_code=400, detail="Incomplete registration details.")
+
+    document = UserDocument(
+        user_id=user.id,
+        document_type=data.document_type,
+        document_no=data.document_no,
+        document_expiry_date=data.document_expiry_date,
+    )
+
+    db.add(document)
+    db.commit()
+    db.refresh(document)
+    return document
+
+
+# Passenger
 def create_passenger_(data: PassengerCreateSchema, db: Session = Depends(get_db)):
     if db.query(Passenger).filter(Passenger.email == data.email).first():
         raise HTTPException(

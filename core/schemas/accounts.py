@@ -1,8 +1,8 @@
-import email
+import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, HttpUrl
 
 
 class DocumentType(str, Enum):
@@ -127,6 +127,16 @@ class UserBankDetailSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserDocsImageSchema(BaseModel):
+    image_url: HttpUrl
+
+
+class UserDocsSchema(BaseModel):
+    document_type: Optional[DocumentType] = DocumentType.NATIONAL_IDENTITY_CARD
+    document_no: str
+    document_expiry_date: datetime.date
 
 
 class PassengerCreateSchema(BaseModel):
